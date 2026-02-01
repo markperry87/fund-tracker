@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fund Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #2c3e50;
+        }
+
+        .last-updated {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        /* Daily Changes Table */
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .funds-table {
+            width: 100%;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+            overflow: hidden;
+        }
+
+        .funds-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .funds-table th,
+        .funds-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .funds-table th {
+            background: #2c3e50;
+            color: white;
+            font-weight: 500;
+        }
+
+        .funds-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .funds-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .nav-value {
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+
+        .change-positive {
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        .change-negative {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+
+        .change-neutral {
+            color: #7f8c8d;
+        }
+
+        /* Chart Section */
+        .chart-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 400px;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 60px;
+            color: #7f8c8d;
+        }
+
+        .date-label {
+            color: #7f8c8d;
+            font-size: 13px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+
+        @media (max-width: 768px) {
+            .funds-table th,
+            .funds-table td {
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Fund Tracker</h1>
+            <span class="last-updated" id="lastUpdated">Loading...</span>
+        </header>
+
+        <!-- Daily Changes Table -->
+        <h2 class="section-title">Daily Changes</h2>
+        <div class="funds-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fund</th>
+                        <th>NAV</th>
+                        <th>Daily Change</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="fundsTableBody">
+                    <tr>
+                        <td colspan="4" class="loading">Loading fund data...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Growth Chart -->
+        <h2 class="section-title">Growth Over Time</h2>
+        <div class="chart-container">
+            <div class="chart-wrapper">
+                <canvas id="growthChart"></canvas>
+            </div>
+            <div id="no-data-message" class="no-data" style="display: none;">
+                No historical data yet. Run the scraper for a few days to see growth trends.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Color palette for the chart lines
+        const colors = [
+            '#3498db', // Blue
+            '#e74c3c', // Red
+            '#2ecc71', // Green
+            '#9b59b6', // Purple
+            '#f39c12', // Orange
+            '#1abc9c', // Teal
+            '#e91e63', // Pink
+        ];
+
+        // Fund order for consistent display
+        const fundOrder = [
+            'RBF5736', 'RBF2146', 'RBF2142', 'RBF5150',
+            'RBF2143', 'RBF1691', 'RBF5280'
+        ];
+
+        function formatNav(nav) {
+            return nav ? `$${nav.toFixed(4)}` : 'N/A';
+        }
+
+        function formatChange(change) {
+            if (change === null || change === undefined) {
+                return '<span class="change-neutral">N/A</span>';
+            }
+            if (change > 0) {
+                return `<span class="change-positive">+${change.toFixed(2)}%</span>`;
+            } else if (change < 0) {
+                return `<span class="change-negative">${change.toFixed(2)}%</span>`;
+            }
+            return '<span class="change-neutral">0.00%</span>';
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return 'No data';
+            return dateStr;
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('fundsTableBody');
+
+            if (!data || !data.funds) {
+                tbody.innerHTML = '<tr><td colspan="4" class="loading">No data available</td></tr>';
+                return;
+            }
+
+            let html = '';
+
+            // Use fund order to maintain consistent display
+            for (const fundCode of fundOrder) {
+                const fund = data.funds[fundCode];
+                if (!fund) continue;
+
+                const history = fund.history || [];
+                const latest = history.length > 0 ? history[history.length - 1] : null;
+
+                html += `
+                    <tr>
+                        <td>${fund.name}</td>
+                        <td class="nav-value">${formatNav(latest?.nav)}</td>
+                        <td>${formatChange(latest?.change_percent)}</td>
+                        <td class="date-label">${formatDate(latest?.date)}</td>
+                    </tr>
+                `;
+            }
+
+            tbody.innerHTML = html || '<tr><td colspan="4" class="loading">No fund data</td></tr>';
+        }
+
+        function renderChart(data) {
+            const canvas = document.getElementById('growthChart');
+            const noDataMsg = document.getElementById('no-data-message');
+
+            if (!data || !data.funds) {
+                canvas.style.display = 'none';
+                noDataMsg.style.display = 'block';
+                return;
+            }
+
+            // Check if we have enough data points
+            let hasData = false;
+            for (const fundCode in data.funds) {
+                if (data.funds[fundCode].history?.length > 1) {
+                    hasData = true;
+                    break;
+                }
+            }
+
+            if (!hasData) {
+                canvas.style.display = 'none';
+                noDataMsg.style.display = 'block';
+                return;
+            }
+
+            // Prepare datasets
+            const datasets = [];
+            let colorIndex = 0;
+
+            for (const fundCode of fundOrder) {
+                const fund = data.funds[fundCode];
+                if (!fund || !fund.history || fund.history.length === 0) continue;
+
+                const history = fund.history;
+                const firstNav = history[0].nav;
+
+                const chartData = history.map(entry => ({
+                    x: entry.date,
+                    y: firstNav ? ((entry.nav - firstNav) / firstNav) * 100 : 0
+                }));
+
+                datasets.push({
+                    label: fund.name,
+                    data: chartData,
+                    borderColor: colors[colorIndex % colors.length],
+                    backgroundColor: colors[colorIndex % colors.length] + '20',
+                    tension: 0.3,
+                    fill: false,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                });
+                colorIndex++;
+            }
+
+            // Get all unique dates
+            const allDates = new Set();
+            for (const fundCode in data.funds) {
+                const history = data.funds[fundCode].history || [];
+                history.forEach(entry => allDates.add(entry.date));
+            }
+            const labels = Array.from(allDates).sort();
+
+            // Create chart
+            const ctx = canvas.getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const val = context.parsed.y;
+                                    return context.dataset.label + ': ' +
+                                           (val >= 0 ? '+' : '') +
+                                           val.toFixed(2) + '%';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Growth %'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return (value >= 0 ? '+' : '') + value + '%';
+                                }
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateLastUpdated(data) {
+            const el = document.getElementById('lastUpdated');
+            if (data && data.last_updated) {
+                const date = new Date(data.last_updated);
+                el.textContent = `Last updated: ${date.toLocaleString()}`;
+            } else {
+                el.textContent = '';
+            }
+        }
+
+        // Load data and render
+        async function init() {
+            try {
+                const response = await fetch('data.json');
+                if (!response.ok) {
+                    throw new Error('Failed to load data.json');
+                }
+                const data = await response.json();
+
+                updateLastUpdated(data);
+                renderTable(data);
+                renderChart(data);
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('fundsTableBody').innerHTML =
+                    '<tr><td colspan="4" class="loading">Error loading data. Run the scraper first.</td></tr>';
+                document.getElementById('growthChart').style.display = 'none';
+                document.getElementById('no-data-message').style.display = 'block';
+                document.getElementById('no-data-message').textContent =
+                    'Could not load data.json. Make sure the scraper has been run at least once.';
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

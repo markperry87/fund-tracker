@@ -1,0 +1,33 @@
+{
+  "funds": {
+    "RBF5736": {
+      "name": "RBC Intl Equity Currency Neutral",
+      "history": []
+    },
+    "RBF2146": {
+      "name": "RBC Global Equity Index",
+      "history": []
+    },
+    "RBF2142": {
+      "name": "RBC Canadian Equity Index",
+      "history": []
+    },
+    "RBF5150": {
+      "name": "PH&N Dividend Income",
+      "history": []
+    },
+    "RBF2143": {
+      "name": "RBC U.S. Equity Index",
+      "history": []
+    },
+    "RBF1691": {
+      "name": "RBC Core Plus Bond Pool",
+      "history": []
+    },
+    "RBF5280": {
+      "name": "PH&N High Yield Bond",
+      "history": []
+    }
+  },
+  "last_updated": null
+}
