@@ -2,32 +2,74 @@
   "funds": {
     "RBF5736": {
       "name": "RBC Intl Equity Currency Neutral",
-      "history": []
+      "history": [
+        {
+          "date": "2026-02-01",
+          "nav": 18.5542,
+          "change_percent": -0.1
+        }
+      ]
     },
     "RBF2146": {
       "name": "RBC Global Equity Index",
-      "history": []
+      "history": [
+        {
+          "date": "2026-02-01",
+          "nav": 16.3335,
+          "change_percent": 0.3
+        }
+      ]
     },
     "RBF2142": {
       "name": "RBC Canadian Equity Index",
-      "history": []
+      "history": [
+        {
+          "date": "2026-02-01",
+          "nav": 14.8535,
+          "change_percent": -3.2
+        }
+      ]
     },
     "RBF5150": {
       "name": "PH&N Dividend Income",
-      "history": []
+      "history": [
+        {
+          "date": "2026-02-01",
+          "nav": 152.4384,
+          "change_percent": -1.8
+        }
+      ]
     },
     "RBF2143": {
       "name": "RBC U.S. Equity Index",
-      "history": []
+      "history": [
+        {
+          "date": "2026-02-01",
+          "nav": 17.0258,
+          "change_percent": 0.6
+        }
+      ]
     },
     "RBF1691": {
       "name": "RBC Core Plus Bond Pool",
-      "history": []
+      "history": [
+        {
+          "date": "2026-02-01",
+          "nav": 9.6189,
+          "change_percent": 0.0
+        }
+      ]
     },
     "RBF5280": {
       "name": "PH&N High Yield Bond",
-      "history": []
+      "history": [
+        {
+          "date": "2026-02-01",
+          "nav": 11.8502,
+          "change_percent": 0.0
+        }
+      ]
     }
   },
-  "last_updated": null
+  "last_updated": "2026-02-01T06:32:05.279219"
 }
