@@ -41,6 +41,16 @@
         .last-updated {
             color: #7f8c8d;
             font-size: 14px;
+            text-align: right;
+            line-height: 1.5;
+        }
+
+        .last-updated .date-row {
+            display: block;
+        }
+
+        .last-updated .label {
+            color: #95a5a6;
         }
 
         /* Daily Changes Table */
@@ -366,12 +376,28 @@
 
         function updateLastUpdated(data) {
             const el = document.getElementById('lastUpdated');
-            if (data && data.last_updated) {
-                const date = new Date(data.last_updated);
-                el.textContent = `Last updated: ${date.toLocaleString()}`;
-            } else {
+            if (!data) {
                 el.textContent = '';
+                return;
             }
+
+            let html = '';
+
+            // Show when the scraper last checked
+            if (data.last_checked) {
+                const checkedDate = new Date(data.last_checked);
+                html += `<span class="date-row"><span class="label">Last checked:</span> ${checkedDate.toLocaleString()}</span>`;
+            } else if (data.last_updated) {
+                const updatedDate = new Date(data.last_updated);
+                html += `<span class="date-row"><span class="label">Last checked:</span> ${updatedDate.toLocaleString()}</span>`;
+            }
+
+            // Show the RBC data date
+            if (data.rbc_data_date) {
+                html += `<span class="date-row"><span class="label">Data as of:</span> ${data.rbc_data_date}</span>`;
+            }
+
+            el.innerHTML = html || '';
         }
 
         // Load data and render
