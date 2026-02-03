@@ -39,16 +39,51 @@ def save_data(data):
         json.dump(data, f, indent=2)
 
 
-def get_all_fund_navs() -> list:
+def extract_rbc_data_date(page) -> str:
+    """
+    Extract the 'as of' date from the RBC page showing when the price data is from.
+
+    Returns:
+        Date string in YYYY-MM-DD format, or None if not found.
+    """
+    # Look for the "as of" date text on the page - RBC shows this near the prices
+    # Common patterns: "As of January 30, 2026" or "Prices as of Jan 30, 2026"
+    try:
+        # Try to find text containing "as of" with a date
+        page_text = page.content()
+
+        # Pattern for dates like "January 30, 2026" or "Jan 30, 2026"
+        date_patterns = [
+            r'[Aa]s\s+of\s+(\w+\s+\d{1,2},?\s+\d{4})',
+            r'[Pp]rices?\s+as\s+of\s+(\w+\s+\d{1,2},?\s+\d{4})',
+            r'[Dd]ate:\s*(\w+\s+\d{1,2},?\s+\d{4})',
+        ]
+
+        for pattern in date_patterns:
+            match = re.search(pattern, page_text)
+            if match:
+                date_str = match.group(1)
+                # Parse the date string
+                for fmt in ['%B %d, %Y', '%B %d %Y', '%b %d, %Y', '%b %d %Y']:
+                    try:
+                        parsed = datetime.strptime(date_str.replace(',', ''), fmt.replace(',', ''))
+                        return parsed.strftime('%Y-%m-%d')
+                    except ValueError:
+                        continue
+
+        return None
+    except Exception:
+        return None
+
+
+def get_all_fund_navs() -> tuple:
     """
     Fetch the NAV and daily change for all tracked funds.
 
     Returns:
-        list of dicts with 'fund_code', 'fund_name', 'nav', 'change_percent', 'date'
+        tuple of (list of fund dicts, rbc_data_date string or None)
+        Each fund dict has 'fund_code', 'fund_name', 'nav', 'change_percent', 'date'
     """
-    # Get today's date for the scrape
-    scrape_date = datetime.now().strftime("%Y-%m-%d")
-
     # URLs to scrape - need both equity and fixed income pages
     urls = [
         "https://www.rbcgam.com/en/ca/products/mutual-funds/?series=f&tab=prices",
@@ -57,6 +92,7 @@ def get_all_fund_navs() -> list:
 
     # Track which funds we've found
     found_data = {}
+    rbc_data_date = None
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -76,14 +112,24 @@ def get_all_fund_navs() -> list:
             page.keyboard.press("Home")
             page.wait_for_timeout(1000)
 
+            # Try to extract the RBC data date from the first page
+            if rbc_data_date is None:
+                rbc_data_date = extract_rbc_data_date(page)
+
+            # Use RBC date if found, otherwise fall back to today's date
+            data_date = rbc_data_date if rbc_data_date else datetime.now().strftime("%Y-%m-%d")
+
             # Try to extract each fund we haven't found yet
             for fund_code, fund_name in FUNDS:
                 if fund_code not in found_data:
-                    result = extract_fund_data(page, fund_code, fund_name, scrape_date)
+                    result = extract_fund_data(page, fund_code, fund_name, data_date)
                     if result['nav'] is not None:
                         found_data[fund_code] = result
 
         browser.close()
+
+    # Use RBC date if found, otherwise fall back to today's date
+    data_date = rbc_data_date if rbc_data_date else datetime.now().strftime("%Y-%m-%d")
 
     # Build final results list in original order
     results = []
@@ -97,10 +143,10 @@ def get_all_fund_navs() -> list:
                 "fund_name": fund_name,
                 "nav": None,
                 "change_percent": None,
-                "date": scrape_date
+                "date": data_date
             })
 
-    return results
+    return results, rbc_data_date
 
 
 def extract_fund_data(page, fund_code: str, fund_name: str, scrape_date: str) -> dict:
@@ -139,7 +185,7 @@ def extract_fund_data(page, fund_code: str, fund_name: str, scrape_date: str) ->
     }
 
 
-def update_json_data(results: list):
+def update_json_data(results: list, rbc_data_date: str = None):
     """Update the JSON data file with new results."""
     data = load_data()
 
@@ -166,8 +212,11 @@ def update_json_data(results: list):
             # Sort by date
             history.sort(key=lambda x: x['date'])
 
-    # Update last_updated timestamp
+    # Update timestamps - when scraper ran and what date RBC data is for
+    data['last_checked'] = datetime.now().isoformat()
     data['last_updated'] = datetime.now().isoformat()
+    if rbc_data_date:
+        data['rbc_data_date'] = rbc_data_date
 
     save_data(data)
     return data
@@ -177,11 +226,23 @@ def main():
     print("RBC GAM Fund NAV Scraper")
     print("=" * 60)
 
+    # Log when the scraper is running
+    check_datetime = datetime.now()
+    print(f"Scraper run date: {check_datetime.strftime('%Y-%m-%d %H:%M:%S')}")
+    print("-" * 60)
+
     try:
-        results = get_all_fund_navs()
+        results, rbc_data_date = get_all_fund_navs()
+
+        # Log the RBC data date
+        print("-" * 60)
+        if rbc_data_date:
+            print(f"RBC website data date: {rbc_data_date}")
+        else:
+            print("RBC website data date: Could not extract (using current date)")
 
         # Save to JSON
-        update_json_data(results)
+        update_json_data(results, rbc_data_date)
         print("\nData saved to data.json")
 
         print(f"\n{'Fund':<35} {'NAV':>10} {'Change':>10} {'Date'}")
