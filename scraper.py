@@ -121,22 +121,31 @@ def get_all_fund_navs() -> tuple:
     rbc_data_date = None
 
     with sync_playwright() as p:
+        # Use realistic browser settings to avoid bot detection/cached content
         browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
+        context = browser.new_context(
+            user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+            viewport={'width': 1920, 'height': 1080},
+            locale='en-CA',
+            timezone_id='America/Toronto',
+        )
+        page = context.new_page()
 
         for url in urls:
             print(f"Fetching: {url.split('?')[1][:50]}...")
-            page.goto(url, wait_until="networkidle")
+            # Add cache-busting timestamp to URL
+            cache_bust_url = f"{url}&_t={int(datetime.now().timestamp())}"
+            page.goto(cache_bust_url, wait_until="networkidle")
 
-            # Wait for page to load
-            page.wait_for_timeout(3000)
+            # Wait longer for JavaScript to fully render
+            page.wait_for_timeout(5000)
 
             # Scroll to load all funds
             for _ in range(10):
                 page.keyboard.press("End")
                 page.wait_for_timeout(500)
             page.keyboard.press("Home")
-            page.wait_for_timeout(1000)
+            page.wait_for_timeout(2000)
 
             # Try to extract the RBC data date from the first page
             if rbc_data_date is None:
@@ -152,6 +161,7 @@ def get_all_fund_navs() -> tuple:
                     if result['nav'] is not None:
                         found_data[fund_code] = result
 
+        context.close()
         browser.close()
 
     # Use RBC date if found, otherwise fall back to today's date
