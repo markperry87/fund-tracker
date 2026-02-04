@@ -46,28 +46,54 @@ def extract_rbc_data_date(page) -> str:
     Returns:
         Date string in YYYY-MM-DD format, or None if not found.
     """
-    # Look for the "as of" date text on the page - RBC shows this near the prices
-    # Common patterns: "As of January 30, 2026" or "Prices as of Jan 30, 2026"
     try:
-        # Try to find text containing "as of" with a date
-        page_text = page.content()
+        # Try to find the rendered "Fund price/yield as of:" date element
+        # This is more reliable than regex on raw HTML since the page uses Vue.js
+        date_locators = [
+            # Look for specific price date elements
+            page.locator("text=/Fund price.*as of/i"),
+            page.locator("text=/Price.*as of/i"),
+            page.locator("[class*='date']"),
+            page.locator("[class*='asOf']"),
+        ]
 
-        # Pattern for dates like "January 30, 2026" or "Jan 30, 2026"
+        for locator in date_locators:
+            try:
+                if locator.count() > 0:
+                    text = locator.first.inner_text()
+                    # Extract date from text like "Fund price/yield as of: February 3, 2026"
+                    match = re.search(r'(\w+\s+\d{1,2},?\s+\d{4})', text)
+                    if match:
+                        date_str = match.group(1)
+                        for fmt in ['%B %d, %Y', '%B %d %Y', '%b %d, %Y', '%b %d %Y']:
+                            try:
+                                parsed = datetime.strptime(date_str.replace(',', ''), fmt.replace(',', ''))
+                                # Sanity check: date should be within last 7 days
+                                if (datetime.now() - parsed).days <= 7:
+                                    return parsed.strftime('%Y-%m-%d')
+                            except ValueError:
+                                continue
+            except Exception:
+                continue
+
+        # Fallback: search page text but exclude known bad patterns
+        page_text = page.inner_text("body")
+
+        # Look for "as of" dates but filter out old ones (capital gains disclaimers, etc.)
         date_patterns = [
-            r'[Aa]s\s+of\s+(\w+\s+\d{1,2},?\s+\d{4})',
-            r'[Pp]rices?\s+as\s+of\s+(\w+\s+\d{1,2},?\s+\d{4})',
-            r'[Dd]ate:\s*(\w+\s+\d{1,2},?\s+\d{4})',
+            r'[Pp]rice[s]?.*[Aa]s\s+of[:\s]+(\w+\s+\d{1,2},?\s+\d{4})',
+            r'[Aa]s\s+of[:\s]+(\w+\s+\d{1,2},?\s+\d{4})',
         ]
 
         for pattern in date_patterns:
-            match = re.search(pattern, page_text)
-            if match:
+            for match in re.finditer(pattern, page_text):
                 date_str = match.group(1)
-                # Parse the date string
                 for fmt in ['%B %d, %Y', '%B %d %Y', '%b %d, %Y', '%b %d %Y']:
                     try:
                         parsed = datetime.strptime(date_str.replace(',', ''), fmt.replace(',', ''))
-                        return parsed.strftime('%Y-%m-%d')
+                        # Only accept dates within the last 7 days
+                        if (datetime.now() - parsed).days <= 7:
+                            return parsed.strftime('%Y-%m-%d')
                     except ValueError:
                         continue
 
