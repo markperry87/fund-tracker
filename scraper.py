@@ -5,7 +5,7 @@ Saves data to JSON file for static site hosting
 """
 
 from playwright.sync_api import sync_playwright
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 import re
 import os
@@ -232,8 +232,9 @@ def update_json_data(results: list, rbc_data_date: str = None):
                 history.sort(key=lambda x: x['date'])
 
     # Update timestamps - when scraper ran and what date RBC data is for
-    data['last_checked'] = datetime.now().isoformat()
-    data['last_updated'] = datetime.now().isoformat()
+    # Use UTC with 'Z' suffix so browser correctly converts to user's local timezone
+    data['last_checked'] = datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+    data['last_updated'] = datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
 
     # Always store rbc_data_date - use extracted date, or fall back to the date used in data entries
     if rbc_data_date:
