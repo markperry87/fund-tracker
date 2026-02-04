@@ -24,6 +24,9 @@ FUNDS = [
     ("RBF5280", "PH&N High Yield Bond"),
 ]
 
+# Base URL for individual fund detail pages
+FUND_DETAIL_URL = "https://www.rbcgam.com/en/ca/products/mutual-funds/{fund_code}/detail"
+
 
 def load_data():
     """Load existing data from JSON file."""
@@ -39,50 +42,27 @@ def save_data(data):
         json.dump(data, f, indent=2)
 
 
-def extract_rbc_data_date(page) -> str:
+def extract_fund_data_from_detail_page(page, fund_code: str, fund_name: str) -> dict:
     """
-    Extract the 'as of' date from the RBC page showing when the price data is from.
+    Extract NAV data from an individual fund's detail page.
+    """
+    result = {
+        "fund_code": fund_code,
+        "fund_name": fund_name,
+        "nav": None,
+        "change_percent": None,
+        "date": None
+    }
 
-    Returns:
-        Date string in YYYY-MM-DD format, or None if not found.
-    """
     try:
-        # Try to find the rendered "Fund price/yield as of:" date element
-        # This is more reliable than regex on raw HTML since the page uses Vue.js
-        date_locators = [
-            # Look for specific price date elements
-            page.locator("text=/Fund price.*as of/i"),
-            page.locator("text=/Price.*as of/i"),
-            page.locator("[class*='date']"),
-            page.locator("[class*='asOf']"),
-        ]
-
-        for locator in date_locators:
-            try:
-                if locator.count() > 0:
-                    text = locator.first.inner_text()
-                    # Extract date from text like "Fund price/yield as of: February 3, 2026"
-                    match = re.search(r'(\w+\s+\d{1,2},?\s+\d{4})', text)
-                    if match:
-                        date_str = match.group(1)
-                        for fmt in ['%B %d, %Y', '%B %d %Y', '%b %d, %Y', '%b %d %Y']:
-                            try:
-                                parsed = datetime.strptime(date_str.replace(',', ''), fmt.replace(',', ''))
-                                # Sanity check: date should be within last 7 days
-                                if (datetime.now() - parsed).days <= 7:
-                                    return parsed.strftime('%Y-%m-%d')
-                            except ValueError:
-                                continue
-            except Exception:
-                continue
-
-        # Fallback: search page text but exclude known bad patterns
+        # Get all text from the page
         page_text = page.inner_text("body")
 
-        # Look for "as of" dates but filter out old ones (capital gains disclaimers, etc.)
+        # Look for the "as of" date - should be near the NAV
+        # Pattern: "as of February 3, 2026" or similar
         date_patterns = [
-            r'[Pp]rice[s]?.*[Aa]s\s+of[:\s]+(\w+\s+\d{1,2},?\s+\d{4})',
             r'[Aa]s\s+of[:\s]+(\w+\s+\d{1,2},?\s+\d{4})',
+            r'[Pp]rice.*[Aa]s\s+of[:\s]+(\w+\s+\d{1,2},?\s+\d{4})',
         ]
 
         for pattern in date_patterns:
@@ -93,35 +73,66 @@ def extract_rbc_data_date(page) -> str:
                         parsed = datetime.strptime(date_str.replace(',', ''), fmt.replace(',', ''))
                         # Only accept dates within the last 7 days
                         if (datetime.now() - parsed).days <= 7:
-                            return parsed.strftime('%Y-%m-%d')
+                            result["date"] = parsed.strftime('%Y-%m-%d')
+                            break
                     except ValueError:
                         continue
+                if result["date"]:
+                    break
+            if result["date"]:
+                break
 
-        return None
-    except Exception:
-        return None
+        # Fall back to today's date if not found
+        if not result["date"]:
+            result["date"] = datetime.now().strftime("%Y-%m-%d")
+
+        # Look for NAV/Price - typically shown prominently on detail page
+        # Pattern: "$14.8535" or "NAV: $14.8535"
+        nav_patterns = [
+            r'(?:NAV|Price|Fund\s+price)[:\s]*\$?([\d,]+\.\d{2,4})',
+            r'\$(\d+\.\d{4})',  # 4 decimal places typical for funds
+        ]
+
+        for pattern in nav_patterns:
+            match = re.search(pattern, page_text)
+            if match:
+                result["nav"] = float(match.group(1).replace(',', ''))
+                break
+
+        # Look for daily change percentage
+        # Pattern: "+0.80%" or "-1.20%" or "0.80%"
+        change_patterns = [
+            r'(?:[Dd]aily\s+)?[Cc]hange[:\s]*([+-]?\d+\.\d+)\s*%',
+            r'([+-]\d+\.\d+)\s*%',  # Signed percentage
+        ]
+
+        for pattern in change_patterns:
+            match = re.search(pattern, page_text)
+            if match:
+                result["change_percent"] = float(match.group(1))
+                break
+
+        # Debug output
+        print(f"  {fund_code}: NAV=${result['nav']}, Change={result['change_percent']}%, Date={result['date']}")
+
+    except Exception as e:
+        print(f"  Error extracting {fund_code}: {e}")
+
+    return result
 
 
 def get_all_fund_navs() -> tuple:
     """
-    Fetch the NAV and daily change for all tracked funds.
+    Fetch the NAV and daily change for all tracked funds by visiting each fund's detail page.
 
     Returns:
         tuple of (list of fund dicts, rbc_data_date string or None)
-        Each fund dict has 'fund_code', 'fund_name', 'nav', 'change_percent', 'date'
     """
-    # URLs to scrape - need both equity and fixed income pages
-    urls = [
-        "https://www.rbcgam.com/en/ca/products/mutual-funds/?series=f&tab=prices",
-        "https://www.rbcgam.com/en/ca/products/mutual-funds/?series=f&tab=prices&assetclass=fixedincome",
-    ]
-
-    # Track which funds we've found
-    found_data = {}
+    results = []
     rbc_data_date = None
 
     with sync_playwright() as p:
-        # Use realistic browser settings to avoid bot detection/cached content
+        # Use realistic browser settings
         browser = p.chromium.launch(headless=True)
         context = browser.new_context(
             user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
@@ -131,104 +142,41 @@ def get_all_fund_navs() -> tuple:
         )
         page = context.new_page()
 
-        for url in urls:
-            print(f"Fetching: {url.split('?')[1][:50]}...")
-            # Add cache-busting timestamp to URL
-            cache_bust_url = f"{url}&_t={int(datetime.now().timestamp())}"
-            page.goto(cache_bust_url, wait_until="networkidle")
+        for fund_code, fund_name in FUNDS:
+            url = FUND_DETAIL_URL.format(fund_code=fund_code)
+            print(f"Fetching {fund_code}...")
 
-            # Wait longer for JavaScript to fully render
-            page.wait_for_timeout(5000)
+            try:
+                # Add cache-busting timestamp
+                cache_bust_url = f"{url}?_t={int(datetime.now().timestamp())}"
+                page.goto(cache_bust_url, wait_until="networkidle")
+                page.wait_for_timeout(3000)  # Wait for JS to render
 
-            # Scroll to load all funds
-            for _ in range(10):
-                page.keyboard.press("End")
-                page.wait_for_timeout(500)
-            page.keyboard.press("Home")
-            page.wait_for_timeout(2000)
+                # Take screenshot of first fund for debugging
+                if fund_code == "RBF2142":
+                    page.screenshot(path="debug_screenshot.png", full_page=False)
 
-            # Debug: Save screenshot and print first fund row to see what we're getting
-            if "fixedincome" not in url:
-                page.screenshot(path="debug_screenshot.png", full_page=False)
-                # Print the first RBF2142 row text for debugging
-                fund_row = page.locator("tr:has-text('RBF2142')")
-                if fund_row.count() > 0:
-                    print(f"DEBUG RBF2142 row: {fund_row.first.inner_text()}")
+                result = extract_fund_data_from_detail_page(page, fund_code, fund_name)
+                results.append(result)
 
-            # Try to extract the RBC data date from the first page
-            if rbc_data_date is None:
-                rbc_data_date = extract_rbc_data_date(page)
+                # Use the first valid date as the RBC data date
+                if rbc_data_date is None and result["date"]:
+                    rbc_data_date = result["date"]
 
-            # Use RBC date if found, otherwise fall back to today's date
-            data_date = rbc_data_date if rbc_data_date else datetime.now().strftime("%Y-%m-%d")
-
-            # Try to extract each fund we haven't found yet
-            for fund_code, fund_name in FUNDS:
-                if fund_code not in found_data:
-                    result = extract_fund_data(page, fund_code, fund_name, data_date)
-                    if result['nav'] is not None:
-                        found_data[fund_code] = result
+            except Exception as e:
+                print(f"  Error fetching {fund_code}: {e}")
+                results.append({
+                    "fund_code": fund_code,
+                    "fund_name": fund_name,
+                    "nav": None,
+                    "change_percent": None,
+                    "date": datetime.now().strftime("%Y-%m-%d")
+                })
 
         context.close()
         browser.close()
 
-    # Use RBC date if found, otherwise fall back to today's date
-    data_date = rbc_data_date if rbc_data_date else datetime.now().strftime("%Y-%m-%d")
-
-    # Build final results list in original order
-    results = []
-    for fund_code, fund_name in FUNDS:
-        if fund_code in found_data:
-            results.append(found_data[fund_code])
-        else:
-            print(f"  Warning: {fund_code} ({fund_name}) not found")
-            results.append({
-                "fund_code": fund_code,
-                "fund_name": fund_name,
-                "nav": None,
-                "change_percent": None,
-                "date": data_date
-            })
-
     return results, rbc_data_date
-
-
-def extract_fund_data(page, fund_code: str, fund_name: str, scrape_date: str) -> dict:
-    """
-    Extract NAV data for a single fund from the already-loaded page.
-    """
-    # Find the row containing our fund code
-    fund_row = page.locator(f"tr:has-text('{fund_code}')")
-
-    if fund_row.count() == 0:
-        return {
-            "fund_code": fund_code,
-            "fund_name": fund_name,
-            "nav": None,
-            "change_percent": None,
-            "date": scrape_date
-        }
-
-    # Get the text content of the row
-    row_text = fund_row.first.inner_text()
-
-    # Extract NAV - look for dollar amount pattern
-    nav_match = re.search(r'\$?([\d,]+\.\d{2,4})', row_text)
-    nav_value = float(nav_match.group(1).replace(',', '')) if nav_match else None
-
-    # Extract % change - find ALL percentages and take the LAST one
-    # RBC table columns: Yield±, Price, Net change, % Change (daily)
-    # The daily % change is the last percentage in the row
-    change_matches = re.findall(r'([+-]?\d+\.\d+)\s*%', row_text)
-    change_percent = float(change_matches[-1]) if change_matches else None
-
-    return {
-        "fund_code": fund_code,
-        "fund_name": fund_name,
-        "nav": nav_value,
-        "change_percent": change_percent,
-        "date": scrape_date
-    }
 
 
 def update_json_data(results: list, rbc_data_date: str = None):
