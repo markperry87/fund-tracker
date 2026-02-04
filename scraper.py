@@ -86,30 +86,35 @@ def extract_fund_data_from_detail_page(page, fund_code: str, fund_name: str) -> 
         if not result["date"]:
             result["date"] = datetime.now().strftime("%Y-%m-%d")
 
-        # Look for NAV/Price - typically shown prominently on detail page
-        # Pattern: "$14.8535" or "NAV: $14.8535"
+        # Look for NAV/Price - on detail page it shows "NAV $" then value on next line
+        # The page shows: "NAV $\n14.9716\n2/2/2026"
         nav_patterns = [
+            r'NAV\s*\$\s*(\d+\.\d{4})',  # "NAV $ 14.9716" or "NAV $\n14.9716"
+            r'NAV[:\s$]+(\d+\.\d{4})',    # More flexible
             r'(?:NAV|Price|Fund\s+price)[:\s]*\$?([\d,]+\.\d{2,4})',
             r'\$(\d+\.\d{4})',  # 4 decimal places typical for funds
         ]
 
         for pattern in nav_patterns:
-            match = re.search(pattern, page_text)
+            match = re.search(pattern, page_text, re.IGNORECASE)
             if match:
                 result["nav"] = float(match.group(1).replace(',', ''))
+                print(f"    Found NAV with pattern: {pattern}")
                 break
 
         # Look for daily change percentage
-        # Pattern: "+0.80%" or "-1.20%" or "0.80%"
+        # On detail page, look for "1 day" return percentage
         change_patterns = [
+            r'1\s*(?:day|d)[:\s]*([+-]?\d+\.\d+)\s*%',  # "1 day: +0.80%"
             r'(?:[Dd]aily\s+)?[Cc]hange[:\s]*([+-]?\d+\.\d+)\s*%',
             r'([+-]\d+\.\d+)\s*%',  # Signed percentage
         ]
 
         for pattern in change_patterns:
-            match = re.search(pattern, page_text)
+            match = re.search(pattern, page_text, re.IGNORECASE)
             if match:
                 result["change_percent"] = float(match.group(1))
+                print(f"    Found change with pattern: {pattern}")
                 break
 
         # Debug output
