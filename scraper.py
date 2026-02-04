@@ -58,33 +58,51 @@ def extract_fund_data_from_detail_page(page, fund_code: str, fund_name: str) -> 
         # Get all text from the page
         page_text = page.inner_text("body")
 
-        # Look for the "as of" date - should be near the NAV
-        # Pattern: "as of February 3, 2026" or similar
-        date_patterns = [
-            r'[Aa]s\s+of[:\s]+(\w+\s+\d{1,2},?\s+\d{4})',
-            r'[Pp]rice.*[Aa]s\s+of[:\s]+(\w+\s+\d{1,2},?\s+\d{4})',
-        ]
+        # Look for the date near the NAV on the detail page
+        # The page shows dates like "2/2/2026" (M/D/YYYY) near the NAV value
 
-        for pattern in date_patterns:
-            for match in re.finditer(pattern, page_text):
-                date_str = match.group(1)
-                for fmt in ['%B %d, %Y', '%B %d %Y', '%b %d, %Y', '%b %d %Y']:
-                    try:
-                        parsed = datetime.strptime(date_str.replace(',', ''), fmt.replace(',', ''))
-                        # Only accept dates within the last 7 days
-                        if (datetime.now() - parsed).days <= 7:
-                            result["date"] = parsed.strftime('%Y-%m-%d')
-                            break
-                    except ValueError:
-                        continue
+        # First try to find numeric date format like "2/2/2026" or "02/02/2026"
+        numeric_date_match = re.search(r'(\d{1,2}/\d{1,2}/\d{4})', page_text)
+        if numeric_date_match:
+            date_str = numeric_date_match.group(1)
+            try:
+                parsed = datetime.strptime(date_str, '%m/%d/%Y')
+                # Only accept dates within the last 7 days
+                if (datetime.now() - parsed).days <= 7:
+                    result["date"] = parsed.strftime('%Y-%m-%d')
+                    print(f"    Found date: {result['date']}")
+            except ValueError:
+                pass
+
+        # If not found, try "as of" patterns
+        if not result["date"]:
+            date_patterns = [
+                r'[Aa]s\s+of[:\s]+(\w+\s+\d{1,2},?\s+\d{4})',
+                r'[Pp]rice.*[Aa]s\s+of[:\s]+(\w+\s+\d{1,2},?\s+\d{4})',
+            ]
+
+            for pattern in date_patterns:
+                for match in re.finditer(pattern, page_text):
+                    date_str = match.group(1)
+                    for fmt in ['%B %d, %Y', '%B %d %Y', '%b %d, %Y', '%b %d %Y']:
+                        try:
+                            parsed = datetime.strptime(date_str.replace(',', ''), fmt.replace(',', ''))
+                            # Only accept dates within the last 7 days
+                            if (datetime.now() - parsed).days <= 7:
+                                result["date"] = parsed.strftime('%Y-%m-%d')
+                                print(f"    Found date: {result['date']}")
+                                break
+                        except ValueError:
+                            continue
+                    if result["date"]:
+                        break
                 if result["date"]:
                     break
-            if result["date"]:
-                break
 
         # Fall back to today's date if not found
         if not result["date"]:
             result["date"] = datetime.now().strftime("%Y-%m-%d")
+            print(f"    Using fallback date: {result['date']}")
 
         # Look for NAV/Price - on detail page it shows "NAV $" then value on next line
         # The page shows: "NAV $\n14.9716\n2/2/2026"

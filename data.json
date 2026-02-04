@@ -4,7 +4,7 @@
       "name": "RBC Intl Equity Currency Neutral",
       "history": [
         {
-          "date": "2025-10-31",
+          "date": "2026-02-02",
           "nav": 18.7402,
           "change_percent": 1.0
         }
@@ -14,7 +14,7 @@
       "name": "RBC Global Equity Index",
       "history": [
         {
-          "date": "2025-10-31",
+          "date": "2026-02-02",
           "nav": 16.4884,
           "change_percent": 0.9
         }
@@ -24,7 +24,7 @@
       "name": "RBC Canadian Equity Index",
       "history": [
         {
-          "date": "2025-10-31",
+          "date": "2026-02-02",
           "nav": 14.9716,
           "change_percent": 0.8
         }
@@ -34,7 +34,7 @@
       "name": "PH&N Dividend Income",
       "history": [
         {
-          "date": "2025-10-31",
+          "date": "2026-02-02",
           "nav": 153.8704,
           "change_percent": 0.9
         }
@@ -44,7 +44,7 @@
       "name": "RBC U.S. Equity Index",
       "history": [
         {
-          "date": "2025-10-31",
+          "date": "2026-02-02",
           "nav": 17.1809,
           "change_percent": 0.9
         }
@@ -54,7 +54,7 @@
       "name": "RBC Core Plus Bond Pool",
       "history": [
         {
-          "date": "2025-10-31",
+          "date": "2026-02-02",
           "nav": 9.6255,
           "change_percent": 0.1
         }
@@ -64,7 +64,7 @@
       "name": "PH&N High Yield Bond",
       "history": [
         {
-          "date": "2025-10-31",
+          "date": "2026-02-02",
           "nav": 11.8537,
           "change_percent": 0.0
         }
@@ -73,5 +73,5 @@
   },
   "last_updated": "2026-02-04T06:25:41.685607",
   "last_checked": "2026-02-04T06:25:41.685599",
-  "rbc_data_date": "2026-02-04"
+  "rbc_data_date": "2026-02-02"
 }
