@@ -172,9 +172,11 @@ def extract_fund_data(page, fund_code: str, fund_name: str, scrape_date: str) ->
     nav_match = re.search(r'\$?([\d,]+\.\d{2,4})', row_text)
     nav_value = float(nav_match.group(1).replace(',', '')) if nav_match else None
 
-    # Extract % change - look for percentage with optional +/- sign
-    change_match = re.search(r'(-?\d+\.\d+)\s*%', row_text)
-    change_percent = float(change_match.group(1)) if change_match else None
+    # Extract % change - find ALL percentages and take the LAST one
+    # RBC table columns: Yield±, Price, Net change, % Change (daily)
+    # The daily % change is the last percentage in the row
+    change_matches = re.findall(r'([+-]?\d+\.\d+)\s*%', row_text)
+    change_percent = float(change_matches[-1]) if change_matches else None
 
     return {
         "fund_code": fund_code,
