@@ -147,6 +147,14 @@ def get_all_fund_navs() -> tuple:
             page.keyboard.press("Home")
             page.wait_for_timeout(2000)
 
+            # Debug: Save screenshot and print first fund row to see what we're getting
+            if "fixedincome" not in url:
+                page.screenshot(path="debug_screenshot.png", full_page=False)
+                # Print the first RBF2142 row text for debugging
+                fund_row = page.locator("tr:has-text('RBF2142')")
+                if fund_row.count() > 0:
+                    print(f"DEBUG RBF2142 row: {fund_row.first.inner_text()}")
+
             # Try to extract the RBC data date from the first page
             if rbc_data_date is None:
                 rbc_data_date = extract_rbc_data_date(page)
