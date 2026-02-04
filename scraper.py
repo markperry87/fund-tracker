@@ -199,24 +199,34 @@ def update_json_data(results: list, rbc_data_date: str = None):
                 "history": []
             }
 
-        # Check if we already have data for this date
         history = data['funds'][fund_code]['history']
-        existing_dates = {entry['date'] for entry in history}
 
-        if r['date'] not in existing_dates and r['nav'] is not None:
-            history.append({
-                "date": r['date'],
-                "nav": r['nav'],
-                "change_percent": r['change_percent']
-            })
-            # Sort by date
-            history.sort(key=lambda x: x['date'])
+        # Only add new entry if NAV actually changed from the most recent entry
+        # This prevents duplicates when RBC data hasn't updated (weekends, holidays)
+        if r['nav'] is not None:
+            last_nav = history[-1]['nav'] if history else None
+            if last_nav is None or r['nav'] != last_nav:
+                history.append({
+                    "date": r['date'],
+                    "nav": r['nav'],
+                    "change_percent": r['change_percent']
+                })
+                # Sort by date
+                history.sort(key=lambda x: x['date'])
 
     # Update timestamps - when scraper ran and what date RBC data is for
     data['last_checked'] = datetime.now().isoformat()
     data['last_updated'] = datetime.now().isoformat()
+
+    # Always store rbc_data_date - use extracted date, or fall back to the date used in data entries
     if rbc_data_date:
         data['rbc_data_date'] = rbc_data_date
+    else:
+        # Fall back to the date from the first result with data
+        for r in results:
+            if r['nav'] is not None:
+                data['rbc_data_date'] = r['date']
+                break
 
     save_data(data)
     return data
