@@ -4,9 +4,134 @@
       "name": "RBC Intl Equity Currency Neutral",
       "history": [
         {
+          "date": "2025-12-24",
+          "nav": 17.9444,
+          "change_percent": 0.1
+        },
+        {
+          "date": "2025-12-31",
+          "nav": 17.9309,
+          "change_percent": -0.4
+        },
+        {
+          "date": "2026-01-02",
+          "nav": 18.1214,
+          "change_percent": 1.1
+        },
+        {
+          "date": "2026-01-05",
+          "nav": 18.2746,
+          "change_percent": 0.8
+        },
+        {
+          "date": "2026-01-06",
+          "nav": 18.358,
+          "change_percent": 0.5
+        },
+        {
+          "date": "2026-01-07",
+          "nav": 18.3347,
+          "change_percent": -0.1
+        },
+        {
+          "date": "2026-01-08",
+          "nav": 18.386,
+          "change_percent": 0.3
+        },
+        {
+          "date": "2026-01-09",
+          "nav": 18.5914,
+          "change_percent": 1.1
+        },
+        {
+          "date": "2026-01-12",
+          "nav": 18.6567,
+          "change_percent": 0.3
+        },
+        {
+          "date": "2026-01-13",
+          "nav": 18.6099,
+          "change_percent": -0.3
+        },
+        {
+          "date": "2026-01-14",
+          "nav": 18.6752,
+          "change_percent": 0.3
+        },
+        {
+          "date": "2026-01-15",
+          "nav": 18.7078,
+          "change_percent": 0.2
+        },
+        {
+          "date": "2026-01-16",
+          "nav": 18.7543,
+          "change_percent": 0.3
+        },
+        {
+          "date": "2026-01-19",
+          "nav": 18.5726,
+          "change_percent": -1.0
+        },
+        {
+          "date": "2026-01-20",
+          "nav": 18.3725,
+          "change_percent": -1.1
+        },
+        {
+          "date": "2026-01-21",
+          "nav": 18.5824,
+          "change_percent": 1.1
+        },
+        {
+          "date": "2026-01-22",
+          "nav": 18.5963,
+          "change_percent": 0.1
+        },
+        {
+          "date": "2026-01-23",
+          "nav": 18.5123,
+          "change_percent": -0.5
+        },
+        {
+          "date": "2026-01-26",
+          "nav": 18.5123,
+          "change_percent": 0.6
+        },
+        {
+          "date": "2026-01-27",
+          "nav": 18.5635,
+          "change_percent": 0.3
+        },
+        {
+          "date": "2026-01-28",
+          "nav": 18.4797,
+          "change_percent": -0.5
+        },
+        {
+          "date": "2026-01-29",
+          "nav": 18.5728,
+          "change_percent": 0.5
+        },
+        {
+          "date": "2026-01-30",
+          "nav": 18.5542,
+          "change_percent": -0.1
+        },
+        {
           "date": "2026-02-02",
           "nav": 18.7402,
           "change_percent": 1.0
+        },
+        {
+          "date": "2026-02-03",
+          "nav": 18.6888,
+          "change_percent": -0.3
+        },
+        {
+          "date": "2026-02-04",
+          "nav": 18.8241,
+          "change_percent": 0.7
         }
       ]
     },
@@ -14,9 +139,134 @@
       "name": "RBC Global Equity Index",
       "history": [
         {
+          "date": "2025-12-24",
+          "nav": 16.2423,
+          "change_percent": 0.1
+        },
+        {
+          "date": "2025-12-31",
+          "nav": 16.133,
+          "change_percent": -0.5
+        },
+        {
+          "date": "2026-01-02",
+          "nav": 16.2069,
+          "change_percent": 0.5
+        },
+        {
+          "date": "2026-01-05",
+          "nav": 16.3698,
+          "change_percent": 1.0
+        },
+        {
+          "date": "2026-01-06",
+          "nav": 16.5095,
+          "change_percent": 0.8
+        },
+        {
+          "date": "2026-01-07",
+          "nav": 16.496,
+          "change_percent": -0.1
+        },
+        {
+          "date": "2026-01-08",
+          "nav": 16.5059,
+          "change_percent": 0.1
+        },
+        {
+          "date": "2026-01-09",
+          "nav": 16.6788,
+          "change_percent": 1.1
+        },
+        {
+          "date": "2026-01-12",
+          "nav": 16.6835,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-01-13",
+          "nav": 16.6428,
+          "change_percent": -0.2
+        },
+        {
+          "date": "2026-01-14",
+          "nav": 16.5926,
+          "change_percent": -0.3
+        },
+        {
+          "date": "2026-01-15",
+          "nav": 16.6371,
+          "change_percent": 0.3
+        },
+        {
+          "date": "2026-01-16",
+          "nav": 16.6538,
+          "change_percent": 0.1
+        },
+        {
+          "date": "2026-01-19",
+          "nav": 16.5976,
+          "change_percent": -0.3
+        },
+        {
+          "date": "2026-01-20",
+          "nav": 16.2457,
+          "change_percent": -2.1
+        },
+        {
+          "date": "2026-01-21",
+          "nav": 16.4194,
+          "change_percent": 1.1
+        },
+        {
+          "date": "2026-01-22",
+          "nav": 16.4461,
+          "change_percent": 0.2
+        },
+        {
+          "date": "2026-01-23",
+          "nav": 16.3632,
+          "change_percent": -0.5
+        },
+        {
+          "date": "2026-01-26",
+          "nav": 16.471,
+          "change_percent": 0.7
+        },
+        {
+          "date": "2026-01-27",
+          "nav": 16.4326,
+          "change_percent": -0.2
+        },
+        {
+          "date": "2026-01-28",
+          "nav": 16.3646,
+          "change_percent": -0.4
+        },
+        {
+          "date": "2026-01-29",
+          "nav": 16.2832,
+          "change_percent": -0.5
+        },
+        {
+          "date": "2026-01-30",
+          "nav": 16.3335,
+          "change_percent": 0.3
+        },
+        {
           "date": "2026-02-02",
           "nav": 16.4884,
           "change_percent": 0.9
+        },
+        {
+          "date": "2026-02-03",
+          "nav": 16.3419,
+          "change_percent": -0.9
+        },
+        {
+          "date": "2026-02-04",
+          "nav": 16.3368,
+          "change_percent": 0.0
         }
       ]
     },
@@ -24,9 +274,134 @@
       "name": "RBC Canadian Equity Index",
       "history": [
         {
+          "date": "2025-12-24",
+          "nav": 14.8581,
+          "change_percent": -0.1
+        },
+        {
+          "date": "2025-12-31",
+          "nav": 14.723,
+          "change_percent": -0.5
+        },
+        {
+          "date": "2026-01-02",
+          "nav": 14.812,
+          "change_percent": 0.6
+        },
+        {
+          "date": "2026-01-05",
+          "nav": 14.9587,
+          "change_percent": 1.0
+        },
+        {
+          "date": "2026-01-06",
+          "nav": 15.0506,
+          "change_percent": 0.6
+        },
+        {
+          "date": "2026-01-07",
+          "nav": 14.9262,
+          "change_percent": -0.8
+        },
+        {
+          "date": "2026-01-08",
+          "nav": 15.0331,
+          "change_percent": 0.7
+        },
+        {
+          "date": "2026-01-09",
+          "nav": 15.1544,
+          "change_percent": 0.8
+        },
+        {
+          "date": "2026-01-12",
+          "nav": 15.2729,
+          "change_percent": 0.8
+        },
+        {
+          "date": "2026-01-13",
+          "nav": 15.2757,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-01-14",
+          "nav": 15.2959,
+          "change_percent": 0.1
+        },
+        {
+          "date": "2026-01-15",
+          "nav": 15.3478,
+          "change_percent": 0.3
+        },
+        {
+          "date": "2026-01-16",
+          "nav": 15.3449,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-01-19",
+          "nav": 15.3766,
+          "change_percent": 0.2
+        },
+        {
+          "date": "2026-01-20",
+          "nav": 15.2089,
+          "change_percent": -1.1
+        },
+        {
+          "date": "2026-01-21",
+          "nav": 15.2666,
+          "change_percent": 0.4
+        },
+        {
+          "date": "2026-01-22",
+          "nav": 15.3269,
+          "change_percent": 0.4
+        },
+        {
+          "date": "2026-01-23",
+          "nav": 15.3963,
+          "change_percent": 0.5
+        },
+        {
+          "date": "2026-01-26",
+          "nav": 15.3817,
+          "change_percent": -0.1
+        },
+        {
+          "date": "2026-01-27",
+          "nav": 15.3759,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-01-28",
+          "nav": 15.4193,
+          "change_percent": 0.3
+        },
+        {
+          "date": "2026-01-29",
+          "nav": 15.3442,
+          "change_percent": -0.5
+        },
+        {
+          "date": "2026-01-30",
+          "nav": 14.8535,
+          "change_percent": -3.2
+        },
+        {
           "date": "2026-02-02",
           "nav": 14.9716,
           "change_percent": 0.8
+        },
+        {
+          "date": "2026-02-03",
+          "nav": 15.0525,
+          "change_percent": 0.5
+        },
+        {
+          "date": "2026-02-04",
+          "nav": 15.1248,
+          "change_percent": 0.5
         }
       ]
     },
@@ -34,9 +409,134 @@
       "name": "PH&N Dividend Income",
       "history": [
         {
+          "date": "2025-12-24",
+          "nav": 151.915,
+          "change_percent": -0.1
+        },
+        {
+          "date": "2025-12-31",
+          "nav": 151.7654,
+          "change_percent": -0.3
+        },
+        {
+          "date": "2026-01-02",
+          "nav": 152.8907,
+          "change_percent": 0.7
+        },
+        {
+          "date": "2026-01-05",
+          "nav": 153.2727,
+          "change_percent": 0.3
+        },
+        {
+          "date": "2026-01-06",
+          "nav": 153.2927,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-01-07",
+          "nav": 151.933,
+          "change_percent": -0.9
+        },
+        {
+          "date": "2026-01-08",
+          "nav": 153.1497,
+          "change_percent": 0.8
+        },
+        {
+          "date": "2026-01-09",
+          "nav": 154.0686,
+          "change_percent": 0.6
+        },
+        {
+          "date": "2026-01-12",
+          "nav": 154.5442,
+          "change_percent": 0.3
+        },
+        {
+          "date": "2026-01-13",
+          "nav": 154.2038,
+          "change_percent": -0.2
+        },
+        {
+          "date": "2026-01-14",
+          "nav": 154.9822,
+          "change_percent": 0.5
+        },
+        {
+          "date": "2026-01-15",
+          "nav": 155.5983,
+          "change_percent": 0.4
+        },
+        {
+          "date": "2026-01-16",
+          "nav": 155.7491,
+          "change_percent": 0.1
+        },
+        {
+          "date": "2026-01-19",
+          "nav": 155.6055,
+          "change_percent": -0.1
+        },
+        {
+          "date": "2026-01-20",
+          "nav": 154.0361,
+          "change_percent": -1.0
+        },
+        {
+          "date": "2026-01-21",
+          "nav": 155.1677,
+          "change_percent": 0.7
+        },
+        {
+          "date": "2026-01-22",
+          "nav": 155.8232,
+          "change_percent": 0.4
+        },
+        {
+          "date": "2026-01-23",
+          "nav": 156.0734,
+          "change_percent": 0.2
+        },
+        {
+          "date": "2026-01-26",
+          "nav": 155.7528,
+          "change_percent": -0.2
+        },
+        {
+          "date": "2026-01-27",
+          "nav": 155.4516,
+          "change_percent": -0.2
+        },
+        {
+          "date": "2026-01-28",
+          "nav": 155.1516,
+          "change_percent": -0.2
+        },
+        {
+          "date": "2026-01-29",
+          "nav": 155.2704,
+          "change_percent": 0.1
+        },
+        {
+          "date": "2026-01-30",
+          "nav": 152.4384,
+          "change_percent": -1.8
+        },
+        {
           "date": "2026-02-02",
           "nav": 153.8704,
           "change_percent": 0.9
+        },
+        {
+          "date": "2026-02-03",
+          "nav": 154.9345,
+          "change_percent": 0.7
+        },
+        {
+          "date": "2026-02-04",
+          "nav": 156.7548,
+          "change_percent": 1.2
         }
       ]
     },
@@ -44,9 +544,134 @@
       "name": "RBC U.S. Equity Index",
       "history": [
         {
+          "date": "2025-12-24",
+          "nav": 17.0584,
+          "change_percent": 0.2
+        },
+        {
+          "date": "2025-12-31",
+          "nav": 16.9132,
+          "change_percent": -0.5
+        },
+        {
+          "date": "2026-01-02",
+          "nav": 16.9536,
+          "change_percent": 0.2
+        },
+        {
+          "date": "2026-01-05",
+          "nav": 17.1022,
+          "change_percent": 0.9
+        },
+        {
+          "date": "2026-01-06",
+          "nav": 17.262,
+          "change_percent": 0.9
+        },
+        {
+          "date": "2026-01-07",
+          "nav": 17.2613,
+          "change_percent": -0.3
+        },
+        {
+          "date": "2026-01-08",
+          "nav": 17.2682,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-01-09",
+          "nav": 17.444,
+          "change_percent": 1.0
+        },
+        {
+          "date": "2026-01-12",
+          "nav": 17.43,
+          "change_percent": -0.1
+        },
+        {
+          "date": "2026-01-13",
+          "nav": 17.4011,
+          "change_percent": -0.2
+        },
+        {
+          "date": "2026-01-14",
+          "nav": 17.3197,
+          "change_percent": -0.5
+        },
+        {
+          "date": "2026-01-15",
+          "nav": 17.3824,
+          "change_percent": 0.4
+        },
+        {
+          "date": "2026-01-16",
+          "nav": 17.387,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-01-19",
+          "nav": 17.3286,
+          "change_percent": -0.3
+        },
+        {
+          "date": "2026-01-20",
+          "nav": 16.9385,
+          "change_percent": -2.3
+        },
+        {
+          "date": "2026-01-21",
+          "nav": 17.1272,
+          "change_percent": 1.1
+        },
+        {
+          "date": "2026-01-22",
+          "nav": 17.1634,
+          "change_percent": 0.2
+        },
+        {
+          "date": "2026-01-23",
+          "nav": 17.0571,
+          "change_percent": -0.6
+        },
+        {
+          "date": "2026-01-26",
+          "nav": 17.165,
+          "change_percent": 0.6
+        },
+        {
+          "date": "2026-01-27",
+          "nav": 17.0691,
+          "change_percent": -0.6
+        },
+        {
+          "date": "2026-01-28",
+          "nav": 17.0441,
+          "change_percent": -0.1
+        },
+        {
+          "date": "2026-01-29",
+          "nav": 16.9196,
+          "change_percent": -0.7
+        },
+        {
+          "date": "2026-01-30",
+          "nav": 17.0258,
+          "change_percent": 0.6
+        },
+        {
           "date": "2026-02-02",
           "nav": 17.1809,
           "change_percent": 0.9
+        },
+        {
+          "date": "2026-02-03",
+          "nav": 16.9914,
+          "change_percent": -1.1
+        },
+        {
+          "date": "2026-02-04",
+          "nav": 16.9471,
+          "change_percent": -0.3
         }
       ]
     },
@@ -54,9 +679,134 @@
       "name": "RBC Core Plus Bond Pool",
       "history": [
         {
+          "date": "2025-12-24",
+          "nav": 9.5657,
+          "change_percent": 0.1
+        },
+        {
+          "date": "2025-12-31",
+          "nav": 9.5719,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-01-02",
+          "nav": 9.5632,
+          "change_percent": -0.1
+        },
+        {
+          "date": "2026-01-05",
+          "nav": 9.5841,
+          "change_percent": 0.2
+        },
+        {
+          "date": "2026-01-06",
+          "nav": 9.59,
+          "change_percent": 0.1
+        },
+        {
+          "date": "2026-01-07",
+          "nav": 9.6051,
+          "change_percent": 0.2
+        },
+        {
+          "date": "2026-01-08",
+          "nav": 9.5966,
+          "change_percent": -0.1
+        },
+        {
+          "date": "2026-01-09",
+          "nav": 9.6104,
+          "change_percent": 0.1
+        },
+        {
+          "date": "2026-01-12",
+          "nav": 9.608,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-01-13",
+          "nav": 9.608,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-01-14",
+          "nav": 9.6216,
+          "change_percent": 0.1
+        },
+        {
+          "date": "2026-01-15",
+          "nav": 9.6273,
+          "change_percent": 0.1
+        },
+        {
+          "date": "2026-01-16",
+          "nav": 9.6203,
+          "change_percent": -0.1
+        },
+        {
+          "date": "2026-01-19",
+          "nav": 9.6151,
+          "change_percent": -0.1
+        },
+        {
+          "date": "2026-01-20",
+          "nav": 9.5909,
+          "change_percent": -0.3
+        },
+        {
+          "date": "2026-01-21",
+          "nav": 9.6077,
+          "change_percent": 0.2
+        },
+        {
+          "date": "2026-01-22",
+          "nav": 9.6189,
+          "change_percent": 0.1
+        },
+        {
+          "date": "2026-01-23",
+          "nav": 9.6159,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-01-26",
+          "nav": 9.6354,
+          "change_percent": 0.2
+        },
+        {
+          "date": "2026-01-27",
+          "nav": 9.6253,
+          "change_percent": -0.1
+        },
+        {
+          "date": "2026-01-28",
+          "nav": 9.6217,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-01-29",
+          "nav": 9.6171,
+          "change_percent": -0.1
+        },
+        {
+          "date": "2026-01-30",
+          "nav": 9.6189,
+          "change_percent": 0.0
+        },
+        {
           "date": "2026-02-02",
           "nav": 9.6255,
           "change_percent": 0.1
+        },
+        {
+          "date": "2026-02-03",
+          "nav": 9.6262,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-02-04",
+          "nav": 9.6267,
+          "change_percent": 0.0
         }
       ]
     },
@@ -64,14 +814,146 @@
       "name": "PH&N High Yield Bond",
       "history": [
         {
+          "date": "2025-12-24",
+          "nav": 11.768,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2025-12-31",
+          "nav": 11.7721,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-01-02",
+          "nav": 11.7693,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-01-05",
+          "nav": 11.7819,
+          "change_percent": 0.1
+        },
+        {
+          "date": "2026-01-06",
+          "nav": 11.7847,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-01-07",
+          "nav": 11.7924,
+          "change_percent": 0.1
+        },
+        {
+          "date": "2026-01-08",
+          "nav": 11.7932,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-01-09",
+          "nav": 11.7972,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-01-12",
+          "nav": 11.8018,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-01-13",
+          "nav": 11.808,
+          "change_percent": 0.1
+        },
+        {
+          "date": "2026-01-14",
+          "nav": 11.8159,
+          "change_percent": 0.1
+        },
+        {
+          "date": "2026-01-15",
+          "nav": 11.8202,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-01-16",
+          "nav": 11.8183,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-01-19",
+          "nav": 11.8188,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-01-20",
+          "nav": 11.8147,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-01-21",
+          "nav": 11.8153,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-01-22",
+          "nav": 11.8209,
+          "change_percent": 0.1
+        },
+        {
+          "date": "2026-01-23",
+          "nav": 11.8233,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-01-26",
+          "nav": 11.8376,
+          "change_percent": 0.1
+        },
+        {
+          "date": "2026-01-27",
+          "nav": 11.8388,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-01-28",
+          "nav": 11.8433,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-01-29",
+          "nav": 11.8468,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-01-30",
+          "nav": 11.8502,
+          "change_percent": 0.0
+        },
+        {
           "date": "2026-02-02",
           "nav": 11.8537,
           "change_percent": 0.0
+        },
+        {
+          "date": "2026-02-03",
+          "nav": 11.8579,
+          "change_percent": 0.0
+        },
+        {
+          "date": "2026-02-04",
+          "nav": 11.8644,
+          "change_percent": 0.1
         }
       ]
     }
   },
-  "last_updated": "2026-02-04T23:34:39.442636Z",
-  "last_checked": "2026-02-04T23:34:39.442619Z",
-  "rbc_data_date": "2026-02-02"
+  "last_updated": "2026-02-05T04:26:26.604132Z",
+  "last_checked": "2026-02-05T04:26:26.604122Z",
+  "rbc_data_date": "2025-12-31",
+  "unavailable_dates": [
+    "20251225",
+    "20251226",
+    "20251229",
+    "20251230",
+    "20260101"
+  ]
 }
