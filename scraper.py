@@ -84,10 +84,13 @@ def extract_funds_from_list_page(page, page_text, actual_date):
             if nav_match:
                 result["nav"] = float(nav_match.group(1))
 
-            # Change % - signed or unsigned percentage
-            change_match = re.search(r'([+-]?\d+\.\d+)\s*%', nearby)
-            if change_match:
-                result["change_percent"] = float(change_match.group(1))
+                # Change % - search only in a limited window after the NAV
+                # to avoid grabbing data from the next fund's row when this
+                # field is blank ("-" on RBC's site)
+                after_nav = nearby[nav_match.end():nav_match.end() + 150]
+                change_match = re.search(r'([+-]?\d+\.\d+)\s*%', after_nav)
+                if change_match:
+                    result["change_percent"] = float(change_match.group(1))
 
         results.append(result)
 
@@ -236,6 +239,7 @@ def update_json_data(all_results, skipped_dates=None):
         all_results: dict mapping date (YYYY-MM-DD) -> list of fund result dicts
     """
     data = load_data()
+    new_entries_added = False
 
     for date, results in all_results.items():
         for r in results:
@@ -259,6 +263,7 @@ def update_json_data(all_results, skipped_dates=None):
                         "nav": r['nav'],
                         "change_percent": r['change_percent']
                     })
+                    new_entries_added = True
 
         # Sort each fund's history by date
         for fund_code in data['funds']:
@@ -271,14 +276,19 @@ def update_json_data(all_results, skipped_dates=None):
         existing_skipped.update(skipped_dates)
         data['unavailable_dates'] = sorted(existing_skipped)
 
-    # Update timestamps
+    # Always update last_checked (when the scraper ran)
     data['last_checked'] = datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
-    data['last_updated'] = datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
 
-    # Set rbc_data_date to the most recent date we have data for
+    # Only update last_updated when new data was actually added
+    if new_entries_added:
+        data['last_updated'] = datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+
+    # Set rbc_data_date to the most recent date we have data for,
+    # keeping the existing value if it's newer than this scrape's results
     all_dates = sorted(all_results.keys())
     if all_dates:
-        data['rbc_data_date'] = all_dates[-1]
+        existing_date = data.get('rbc_data_date', '')
+        data['rbc_data_date'] = max(all_dates[-1], existing_date)
 
     save_data(data)
     return data
