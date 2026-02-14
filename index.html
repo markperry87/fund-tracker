@@ -152,6 +152,124 @@
                 font-size: 14px;
             }
         }
+
+        /* Market Indices Section */
+        .market-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .index-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+
+        .card-header {
+            margin-bottom: 15px;
+        }
+
+        .card-header h3 {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 4px;
+        }
+
+        .card-price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+
+        .current-price {
+            font-size: 24px;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            color: #2c3e50;
+        }
+
+        .price-date {
+            font-size: 13px;
+            color: #95a5a6;
+        }
+
+        .period-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .period-stat {
+            padding: 8px 4px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .period-stat .label {
+            font-size: 11px;
+            color: #95a5a6;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .period-stat .value {
+            font-size: 15px;
+            font-weight: 600;
+            display: block;
+        }
+
+        .period-stat .absolute {
+            font-size: 11px;
+            color: #7f8c8d;
+            display: block;
+        }
+
+        .chart-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .chart-tabs .tab {
+            padding: 5px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .chart-tabs .tab:hover {
+            background: #f0f0f0;
+        }
+
+        .chart-tabs .tab.active {
+            background: #2c3e50;
+            color: white;
+            border-color: #2c3e50;
+        }
+
+        .card-chart-wrapper {
+            position: relative;
+            height: 200px;
+        }
+
+        @media (max-width: 768px) {
+            .market-cards {
+                grid-template-columns: 1fr;
+            }
+            .period-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
     </style>
 </head>
 <body>
@@ -190,6 +308,12 @@
             <div id="no-data-message" class="no-data" style="display: none;">
                 No historical data yet. Run the scraper for a few days to see growth trends.
             </div>
+        </div>
+
+        <!-- Market Indices -->
+        <h2 class="section-title" style="margin-top: 40px;">Market Indices</h2>
+        <div class="market-cards" id="marketCards">
+            <div class="loading">Loading market data...</div>
         </div>
     </div>
 
@@ -424,6 +548,239 @@
         }
 
         init();
+
+        // ---- Market Indices ----
+
+        const indexOrder = ['^GSPC', '^GSPTSE', 'EFA'];
+        const indexColors = ['#e74c3c', '#3498db', '#2ecc71'];
+        const marketCharts = {};
+
+        const CHART_PERIOD_DAYS = {
+            '1W': 7,
+            '1M': 30,
+            '3M': 90,
+            '1Y': 365,
+        };
+
+        function computeChange(history, days) {
+            if (history.length < 2) return null;
+            const latest = history[history.length - 1];
+
+            if (days === 1) {
+                const prev = history[history.length - 2];
+                return {
+                    percent: ((latest.close - prev.close) / prev.close) * 100,
+                    absolute: latest.close - prev.close,
+                };
+            }
+
+            const targetDate = new Date(latest.date);
+            targetDate.setDate(targetDate.getDate() - days);
+            const targetStr = targetDate.toISOString().slice(0, 10);
+
+            let ref = history[0];
+            for (let i = history.length - 1; i >= 0; i--) {
+                if (history[i].date <= targetStr) {
+                    ref = history[i];
+                    break;
+                }
+            }
+
+            return {
+                percent: ((latest.close - ref.close) / ref.close) * 100,
+                absolute: latest.close - ref.close,
+            };
+        }
+
+        function formatMarketChange(change) {
+            if (!change) return '<span class="change-neutral">N/A</span>';
+            const sign = change.percent >= 0 ? '+' : '';
+            const cls = change.percent > 0 ? 'change-positive'
+                      : change.percent < 0 ? 'change-negative'
+                      : 'change-neutral';
+            return `<span class="${cls}">${sign}${change.percent.toFixed(2)}%</span>`;
+        }
+
+        function formatAbsolute(change, ticker) {
+            if (!change) return '';
+            const sign = change.absolute >= 0 ? '+' : '';
+            if (ticker === 'EFA') return `${sign}$${change.absolute.toFixed(2)}`;
+            return `${sign}${change.absolute.toFixed(2)}`;
+        }
+
+        function formatPrice(close, ticker) {
+            if (ticker === 'EFA') return `$${close.toFixed(2)}`;
+            return close.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function createMarketChart(canvasId, history, days, color) {
+            const cutoff = new Date();
+            cutoff.setDate(cutoff.getDate() - days);
+            const cutoffStr = cutoff.toISOString().slice(0, 10);
+            const filtered = history.filter(h => h.date >= cutoffStr);
+
+            if (filtered.length === 0) return null;
+
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            return new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: filtered.map(h => h.date),
+                    datasets: [{
+                        data: filtered.map(h => h.close),
+                        borderColor: color,
+                        backgroundColor: color + '20',
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: filtered.length > 60 ? 0 : 3,
+                        pointHoverRadius: 5,
+                        borderWidth: 2,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(ctx) {
+                                    return ctx.parsed.y.toLocaleString('en-US', {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
+                                    });
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { maxTicksAutoSkip: true, maxRotation: 0, font: { size: 11 } }
+                        },
+                        y: {
+                            ticks: { font: { size: 11 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderMarketCards(marketData) {
+            const container = document.getElementById('marketCards');
+
+            if (!marketData || !marketData.indices) {
+                container.innerHTML = '<div class="loading">No market data available. Run market_scraper.py first.</div>';
+                return;
+            }
+
+            let html = '';
+
+            indexOrder.forEach((ticker, i) => {
+                const idx = marketData.indices[ticker];
+                if (!idx || !idx.history || idx.history.length === 0) return;
+
+                const latest = idx.history[idx.history.length - 1];
+                const dayChange = computeChange(idx.history, 1);
+                const weekChange = computeChange(idx.history, 7);
+                const monthChange = computeChange(idx.history, 30);
+                const yearChange = computeChange(idx.history, 365);
+                const canvasId = 'mchart-' + ticker.replace('^', '');
+
+                html += `
+                    <div class="index-card" data-ticker="${ticker}" data-color="${indexColors[i]}">
+                        <div class="card-header">
+                            <h3>${idx.name}</h3>
+                            <div class="card-price-row">
+                                <span class="current-price">${formatPrice(latest.close, ticker)}</span>
+                                <span class="price-date">${latest.date}</span>
+                            </div>
+                        </div>
+                        <div class="period-stats">
+                            <div class="period-stat">
+                                <span class="label">1D</span>
+                                <span class="value">${formatMarketChange(dayChange)}</span>
+                                <span class="absolute">${formatAbsolute(dayChange, ticker)}</span>
+                            </div>
+                            <div class="period-stat">
+                                <span class="label">1W</span>
+                                <span class="value">${formatMarketChange(weekChange)}</span>
+                                <span class="absolute">${formatAbsolute(weekChange, ticker)}</span>
+                            </div>
+                            <div class="period-stat">
+                                <span class="label">1M</span>
+                                <span class="value">${formatMarketChange(monthChange)}</span>
+                                <span class="absolute">${formatAbsolute(monthChange, ticker)}</span>
+                            </div>
+                            <div class="period-stat">
+                                <span class="label">1Y</span>
+                                <span class="value">${formatMarketChange(yearChange)}</span>
+                                <span class="absolute">${formatAbsolute(yearChange, ticker)}</span>
+                            </div>
+                        </div>
+                        <div class="chart-tabs">
+                            <button class="tab" data-period="1W">1W</button>
+                            <button class="tab active" data-period="1M">1M</button>
+                            <button class="tab" data-period="3M">3M</button>
+                            <button class="tab" data-period="1Y">1Y</button>
+                        </div>
+                        <div class="card-chart-wrapper">
+                            <canvas id="${canvasId}"></canvas>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html || '<div class="loading">No market data available.</div>';
+
+            // Create initial charts (1M default)
+            indexOrder.forEach((ticker, i) => {
+                const idx = marketData.indices[ticker];
+                if (!idx || !idx.history || idx.history.length === 0) return;
+                const canvasId = 'mchart-' + ticker.replace('^', '');
+                marketCharts[canvasId] = createMarketChart(canvasId, idx.history, 30, indexColors[i]);
+            });
+        }
+
+        // Tab click handler for market charts
+        document.addEventListener('click', function(e) {
+            if (!e.target.classList.contains('tab')) return;
+            const card = e.target.closest('.index-card');
+            if (!card) return;
+
+            const ticker = card.dataset.ticker;
+            const color = card.dataset.color;
+            const period = e.target.dataset.period;
+            const days = CHART_PERIOD_DAYS[period];
+            if (!days) return;
+
+            card.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            e.target.classList.add('active');
+
+            const canvasId = 'mchart-' + ticker.replace('^', '');
+            if (marketCharts[canvasId]) {
+                marketCharts[canvasId].destroy();
+            }
+
+            const idx = window._marketData.indices[ticker];
+            marketCharts[canvasId] = createMarketChart(canvasId, idx.history, days, color);
+        });
+
+        // Load market data
+        async function initMarket() {
+            try {
+                const response = await fetch(`market_data.json?t=${Date.now()}`);
+                if (!response.ok) throw new Error('No market_data.json');
+                const marketData = await response.json();
+                window._marketData = marketData;
+                renderMarketCards(marketData);
+            } catch (error) {
+                console.error('Error loading market data:', error);
+                document.getElementById('marketCards').innerHTML =
+                    '<div class="loading">Could not load market data. Run market_scraper.py first.</div>';
+            }
+        }
+
+        initMarket();
     </script>
 </body>
 </html>
