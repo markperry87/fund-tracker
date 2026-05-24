@@ -209,6 +209,35 @@
             color: #95a5a6;
         }
 
+        .market-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .market-status .label {
+            font-size: 12px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .market-status .value {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .market-status .absolute {
+            font-size: 12px;
+            color: #7f8c8d;
+            text-align: right;
+        }
+
         .period-stats {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -748,6 +777,56 @@
             return close.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
+        function formatStatusTime(asOf) {
+            if (!asOf) return '';
+            const date = new Date(asOf);
+            if (Number.isNaN(date.getTime())) return '';
+
+            return date.toLocaleTimeString([], {
+                hour: 'numeric',
+                minute: '2-digit'
+            });
+        }
+
+        function normalizeMarketStatus(rawStatus, dayChange, latest) {
+            if (!rawStatus) {
+                if (!dayChange) return null;
+                return {
+                    label: '1D',
+                    price: latest.close,
+                    percent: dayChange.percent,
+                    absolute: dayChange.absolute,
+                    detail: 'since prev close'
+                };
+            }
+
+            const detail = rawStatus.is_open
+                ? `as of ${formatStatusTime(rawStatus.as_of)}`
+                : 'since prev close';
+
+            return {
+                label: rawStatus.label || (rawStatus.is_open ? 'Today' : '1D'),
+                price: rawStatus.price,
+                percent: rawStatus.change_percent,
+                absolute: rawStatus.change,
+                detail: detail
+            };
+        }
+
+        function renderMarketStatus(status, ticker) {
+            if (!status) return '';
+
+            return `
+                <div class="market-status">
+                    <div>
+                        <span class="label">${status.label}</span>
+                        <span class="value">${formatMarketChange(status)}</span>
+                    </div>
+                    <span class="absolute">${formatAbsolute(status, ticker)} ${status.detail}</span>
+                </div>
+            `;
+        }
+
         function createMarketChart(canvasId, history, days, color) {
             const cutoff = new Date();
             cutoff.setDate(cutoff.getDate() - days);
@@ -819,6 +898,9 @@
                 const weekChange = computeChange(idx.history, 7);
                 const monthChange = computeChange(idx.history, 30);
                 const yearChange = computeChange(idx.history, 365);
+                const currentStatus = normalizeMarketStatus(marketData.status?.[ticker], dayChange, latest);
+                const displayPrice = currentStatus?.price || latest.close;
+                const displayDate = currentStatus?.label === 'Today' ? currentStatus.detail : latest.date;
                 const canvasId = 'mchart-' + ticker.replace('^', '');
 
                 html += `
@@ -826,10 +908,11 @@
                         <div class="card-header">
                             <h3>${idx.name}</h3>
                             <div class="card-price-row">
-                                <span class="current-price">${formatPrice(latest.close, ticker)}</span>
-                                <span class="price-date">${latest.date}</span>
+                                <span class="current-price">${formatPrice(displayPrice, ticker)}</span>
+                                <span class="price-date">${displayDate}</span>
                             </div>
                         </div>
+                        ${renderMarketStatus(currentStatus, ticker)}
                         <div class="period-stats">
                             <div class="period-stat">
                                 <span class="label">1D</span>
