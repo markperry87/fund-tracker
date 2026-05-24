@@ -66,11 +66,12 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin-bottom: 40px;
-            overflow: hidden;
+            overflow-x: auto;
         }
 
         .funds-table table {
             width: 100%;
+            min-width: 960px;
             border-collapse: collapse;
         }
 
@@ -112,6 +113,42 @@
 
         .change-neutral {
             color: #7f8c8d;
+        }
+
+        .benchmark-cell {
+            min-width: 300px;
+        }
+
+        .benchmark-name {
+            display: block;
+            color: #7f8c8d;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+
+        .benchmark-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .benchmark-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 7px;
+            border-radius: 6px;
+            background: #f8f9fa;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .benchmark-chip .period {
+            color: #7f8c8d;
+        }
+
+        .benchmark-chip .value {
+            font-weight: 700;
         }
 
         /* Chart Section */
@@ -335,12 +372,13 @@
                         <th>Fund</th>
                         <th>NAV</th>
                         <th>Daily Change</th>
+                        <th title="Fund return minus benchmark return over the same period">vs Benchmark</th>
                         <th>Date</th>
                     </tr>
                 </thead>
                 <tbody id="fundsTableBody">
                     <tr>
-                        <td colspan="4" class="loading">Loading fund data...</td>
+                        <td colspan="5" class="loading">Loading fund data...</td>
                     </tr>
                 </tbody>
             </table>
@@ -390,6 +428,21 @@
             'RBF2143', 'RBF1691', 'RBF5280'
         ];
 
+        const benchmarkMap = {
+            'RBF5736': { ticker: 'EFA', label: 'MSCI EAFE ETF' },
+            'RBF2146': { ticker: '^GSPC', label: 'S&P 500' },
+            'RBF2142': { ticker: '^GSPTSE', label: 'TSX Composite' },
+            'RBF5150': { ticker: '^GSPTSE', label: 'TSX Composite' },
+            'RBF2143': { ticker: '^GSPC', label: 'S&P 500' }
+        };
+
+        const benchmarkPeriods = [
+            { key: '1D', label: '1D', points: 2 },
+            { key: '1W', label: '1W', days: 7 },
+            { key: '1M', label: '1M', days: 30 },
+            { key: 'ALL', label: 'All' }
+        ];
+
         const FUND_CHART_PERIODS = {
             '1D': { points: 2, maxTicks: 2 },
             '1W': { days: 7, maxTicks: 7 },
@@ -421,11 +474,125 @@
             return dateStr;
         }
 
-        function renderTable(data) {
+        function normalizeHistory(history, valueKey) {
+            return (history || [])
+                .filter(entry => entry.date && entry[valueKey])
+                .map(entry => ({
+                    date: entry.date,
+                    value: entry[valueKey]
+                }))
+                .sort((a, b) => a.date.localeCompare(b.date));
+        }
+
+        function valueMap(history) {
+            return new Map(history.map(entry => [entry.date, entry.value]));
+        }
+
+        function getCommonDates(fundHistory, benchmarkHistory) {
+            const fundDates = new Set(fundHistory.map(entry => entry.date));
+            return benchmarkHistory
+                .map(entry => entry.date)
+                .filter(date => fundDates.has(date))
+                .sort();
+        }
+
+        function findReferenceDate(commonDates, endDate, period) {
+            const endIndex = commonDates.indexOf(endDate);
+            if (endIndex <= 0) return null;
+
+            if (period.points === 2) {
+                return commonDates[endIndex - 1];
+            }
+
+            if (!period.days) {
+                return commonDates[0];
+            }
+
+            const targetDate = new Date(`${endDate}T00:00:00`);
+            targetDate.setDate(targetDate.getDate() - period.days);
+            const targetStr = targetDate.toISOString().slice(0, 10);
+
+            for (let i = endIndex - 1; i >= 0; i--) {
+                if (commonDates[i] <= targetStr) {
+                    return commonDates[i];
+                }
+            }
+
+            return commonDates[0];
+        }
+
+        function computeRelativePerformance(fundHistoryRaw, benchmarkHistoryRaw, period) {
+            const fundHistory = normalizeHistory(fundHistoryRaw, 'nav');
+            const benchmarkHistory = normalizeHistory(benchmarkHistoryRaw, 'close');
+            const commonDates = getCommonDates(fundHistory, benchmarkHistory);
+
+            if (commonDates.length < 2) return null;
+
+            const endDate = commonDates[commonDates.length - 1];
+            const startDate = findReferenceDate(commonDates, endDate, period);
+            if (!startDate || startDate === endDate) return null;
+
+            const fundValues = valueMap(fundHistory);
+            const benchmarkValues = valueMap(benchmarkHistory);
+            const fundStart = fundValues.get(startDate);
+            const fundEnd = fundValues.get(endDate);
+            const benchmarkStart = benchmarkValues.get(startDate);
+            const benchmarkEnd = benchmarkValues.get(endDate);
+
+            if (!fundStart || !fundEnd || !benchmarkStart || !benchmarkEnd) return null;
+
+            const fundReturn = ((fundEnd - fundStart) / fundStart) * 100;
+            const benchmarkReturn = ((benchmarkEnd - benchmarkStart) / benchmarkStart) * 100;
+
+            return fundReturn - benchmarkReturn;
+        }
+
+        function formatRelativeValue(value) {
+            if (value === null || value === undefined) {
+                return '<span class="change-neutral">N/A</span>';
+            }
+
+            const sign = value >= 0 ? '+' : '';
+            const cls = value > 0 ? 'change-positive'
+                      : value < 0 ? 'change-negative'
+                      : 'change-neutral';
+            return `<span class="${cls} value">${sign}${value.toFixed(2)}%</span>`;
+        }
+
+        function renderBenchmarkCell(fundCode, fundHistory, marketData) {
+            const benchmark = benchmarkMap[fundCode];
+            if (!benchmark) {
+                return '<span class="change-neutral">-</span>';
+            }
+
+            const benchmarkHistory = marketData?.indices?.[benchmark.ticker]?.history || [];
+            if (benchmarkHistory.length < 2) {
+                return '<span class="change-neutral">Loading benchmark...</span>';
+            }
+
+            const chips = benchmarkPeriods.map(period => {
+                const value = computeRelativePerformance(fundHistory, benchmarkHistory, period);
+                return `
+                    <span class="benchmark-chip" title="Fund return minus ${benchmark.label} return">
+                        <span class="period">${period.label}</span>
+                        ${formatRelativeValue(value)}
+                    </span>
+                `;
+            }).join('');
+
+            return `
+                <div class="benchmark-cell">
+                    <span class="benchmark-name">Fund return minus ${benchmark.label}</span>
+                    <div class="benchmark-chips">${chips}</div>
+                </div>
+            `;
+        }
+
+        function renderTable(data, marketData = null) {
             const tbody = document.getElementById('fundsTableBody');
 
             if (!data || !data.funds) {
-                tbody.innerHTML = '<tr><td colspan="4" class="loading">No data available</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="loading">No data available</td></tr>';
                 return;
             }
 
@@ -444,12 +611,13 @@
                         <td>${fund.name}</td>
                         <td class="nav-value">${formatNav(latest?.nav)}</td>
                         <td>${formatChange(latest?.change_percent)}</td>
+                        <td>${renderBenchmarkCell(fundCode, history, marketData)}</td>
                         <td class="date-label">${formatDate(latest?.date)}</td>
                     </tr>
                 `;
             }
 
-            tbody.innerHTML = html || '<tr><td colspan="4" class="loading">No fund data</td></tr>';
+            tbody.innerHTML = html || '<tr><td colspan="5" class="loading">No fund data</td></tr>';
         }
 
         function getLatestFundDate(data) {
@@ -687,12 +855,12 @@
                 window._fundData = data;
 
                 updateLastUpdated(data);
-                renderTable(data);
+                renderTable(data, window._marketData);
                 renderChart(data, activeFundChartPeriod);
             } catch (error) {
                 console.error('Error loading data:', error);
                 document.getElementById('fundsTableBody').innerHTML =
-                    '<tr><td colspan="4" class="loading">Error loading data. Run the scraper first.</td></tr>';
+                    '<tr><td colspan="5" class="loading">Error loading data. Run the scraper first.</td></tr>';
                 document.getElementById('growthChart').style.display = 'none';
                 document.getElementById('no-data-message').style.display = 'block';
                 document.getElementById('no-data-message').textContent =
@@ -991,6 +1159,9 @@
                 const marketData = await response.json();
                 window._marketData = marketData;
                 renderMarketCards(marketData);
+                if (window._fundData) {
+                    renderTable(window._fundData, marketData);
+                }
             } catch (error) {
                 console.error('Error loading market data:', error);
                 document.getElementById('marketCards').innerHTML =
