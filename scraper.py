@@ -29,6 +29,12 @@ FUNDS = [
 # Fund prices list page - supports ?tab=prices&date=YYYYMMDD parameter
 PRICES_LIST_URL = "https://www.rbcgam.com/en/ca/products/mutual-funds/"
 
+# Reject scraped NAVs when the implied move from the previous stored NAV is
+# far away from RBC's own daily change value. This catches cases where the
+# page parser grabs another 4-decimal value near the fund code instead of NAV.
+MAX_CHANGE_MISMATCH_PCT = 3.0
+MIN_MOVE_TO_VALIDATE_PCT = 3.0
+
 
 def load_data():
     """Load existing data from JSON file."""
@@ -233,6 +239,34 @@ def scrape_multiple_dates(dates_to_scrape):
     return all_results, skipped_dates
 
 
+def is_nav_consistent(history, result):
+    """Return False when a scraped NAV conflicts with the reported daily change."""
+    nav = result.get('nav')
+    reported_change = result.get('change_percent')
+    if nav is None or reported_change is None:
+        return True
+
+    previous_entries = [
+        h for h in history
+        if h.get('date') < result.get('date') and h.get('nav') is not None
+    ]
+    if not previous_entries:
+        return True
+
+    previous = previous_entries[-1]
+    previous_nav = previous.get('nav')
+    if not previous_nav:
+        return True
+
+    implied_change = ((nav - previous_nav) / previous_nav) * 100
+    mismatch = abs(implied_change - reported_change)
+
+    return not (
+        abs(implied_change) >= MIN_MOVE_TO_VALIDATE_PCT and
+        mismatch >= MAX_CHANGE_MISMATCH_PCT
+    )
+
+
 def update_json_data(all_results, skipped_dates=None):
     """
     Update the JSON data file with results from multiple dates.
@@ -257,6 +291,14 @@ def update_json_data(all_results, skipped_dates=None):
             history = data['funds'][fund_code]['history']
 
             if r['nav'] is not None:
+                if not is_nav_consistent(history, r):
+                    print(
+                        f"  WARNING: Skipping suspicious NAV for {fund_code} "
+                        f"on {r['date']}: NAV={r['nav']}, "
+                        f"Change={r['change_percent']}%"
+                    )
+                    continue
+
                 # Check if we already have an entry for this exact date
                 existing_dates = {h['date'] for h in history}
                 if r['date'] not in existing_dates:

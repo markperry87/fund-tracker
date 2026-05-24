@@ -123,6 +123,19 @@
             margin-bottom: 20px;
         }
 
+        .chart-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .chart-title-row .section-title {
+            margin-bottom: 0;
+        }
+
         .chart-wrapper {
             position: relative;
             height: 400px;
@@ -235,6 +248,7 @@
             display: flex;
             gap: 5px;
             margin-bottom: 10px;
+            flex-wrap: wrap;
         }
 
         .chart-tabs .tab {
@@ -255,6 +269,10 @@
             background: #2c3e50;
             color: white;
             border-color: #2c3e50;
+        }
+
+        .fund-chart-tabs {
+            margin-bottom: 0;
         }
 
         .card-chart-wrapper {
@@ -300,8 +318,16 @@
         </div>
 
         <!-- Growth Chart -->
-        <h2 class="section-title">Growth Over Time</h2>
         <div class="chart-container">
+            <div class="chart-title-row">
+                <h2 class="section-title">Growth Over Time</h2>
+                <div class="chart-tabs fund-chart-tabs" id="fundChartTabs">
+                    <button class="tab fund-range-tab" data-period="1D">1D</button>
+                    <button class="tab fund-range-tab" data-period="1W">1W</button>
+                    <button class="tab fund-range-tab active" data-period="1M">1M</button>
+                    <button class="tab fund-range-tab" data-period="ALL">All</button>
+                </div>
+            </div>
             <div class="chart-wrapper">
                 <canvas id="growthChart"></canvas>
             </div>
@@ -334,6 +360,16 @@
             'RBF5736', 'RBF2146', 'RBF2142', 'RBF5150',
             'RBF2143', 'RBF1691', 'RBF5280'
         ];
+
+        const FUND_CHART_PERIODS = {
+            '1D': { points: 2, maxTicks: 2 },
+            '1W': { days: 7, maxTicks: 7 },
+            '1M': { days: 30, maxTicks: 8 },
+            'ALL': { maxTicks: 10 }
+        };
+
+        let fundGrowthChart = null;
+        let activeFundChartPeriod = '1M';
 
         function formatNav(nav) {
             return nav ? `$${nav.toFixed(4)}` : 'N/A';
@@ -387,7 +423,58 @@
             tbody.innerHTML = html || '<tr><td colspan="4" class="loading">No fund data</td></tr>';
         }
 
-        function renderChart(data) {
+        function getLatestFundDate(data) {
+            let latest = '';
+            for (const fundCode in data.funds) {
+                const history = data.funds[fundCode].history || [];
+                history.forEach(entry => {
+                    if (entry.date > latest) latest = entry.date;
+                });
+            }
+            return latest;
+        }
+
+        function filterFundHistory(history, period, latestDate) {
+            const sorted = [...history]
+                .filter(entry => entry.date && entry.nav)
+                .sort((a, b) => a.date.localeCompare(b.date));
+
+            if (period === '1D') {
+                return sorted.slice(-2);
+            }
+
+            const config = FUND_CHART_PERIODS[period] || FUND_CHART_PERIODS.ALL;
+            if (!config.days || !latestDate) {
+                return sorted;
+            }
+
+            const cutoff = new Date(`${latestDate}T00:00:00`);
+            cutoff.setDate(cutoff.getDate() - config.days);
+            const cutoffStr = cutoff.toISOString().slice(0, 10);
+            const filtered = sorted.filter(entry => entry.date >= cutoffStr);
+
+            return filtered.length >= 2 ? filtered : sorted.slice(-2);
+        }
+
+        function downsampleHistory(history, maxPoints) {
+            if (!maxPoints || history.length <= maxPoints) return history;
+
+            const sampled = [history[0]];
+            const step = (history.length - 1) / (maxPoints - 1);
+            for (let i = 1; i < maxPoints - 1; i++) {
+                sampled.push(history[Math.round(i * step)]);
+            }
+            sampled.push(history[history.length - 1]);
+            return sampled;
+        }
+
+        function formatTickDate(dateStr) {
+            const date = new Date(`${dateStr}T00:00:00`);
+            if (Number.isNaN(date.getTime())) return dateStr;
+            return date.toLocaleDateString('en-CA', { month: 'short', day: 'numeric' });
+        }
+
+        function renderChart(data, period = activeFundChartPeriod) {
             const canvas = document.getElementById('growthChart');
             const noDataMsg = document.getElementById('no-data-message');
 
@@ -412,46 +499,67 @@
                 return;
             }
 
+            canvas.style.display = 'block';
+            noDataMsg.style.display = 'none';
+            activeFundChartPeriod = period;
+
+            if (fundGrowthChart) {
+                fundGrowthChart.destroy();
+                fundGrowthChart = null;
+            }
+
             // Prepare datasets
             const datasets = [];
             let colorIndex = 0;
+            const allDates = new Set();
+            const latestDate = getLatestFundDate(data);
+            const config = FUND_CHART_PERIODS[period] || FUND_CHART_PERIODS.ALL;
+            const maxPoints = period === 'ALL' ? 160 : null;
+            const pointRadius = period === '1D' ? 4 : period === '1W' ? 3 : 0;
 
             for (const fundCode of fundOrder) {
                 const fund = data.funds[fundCode];
                 if (!fund || !fund.history || fund.history.length === 0) continue;
 
-                const history = fund.history;
+                const history = downsampleHistory(
+                    filterFundHistory(fund.history, period, latestDate),
+                    maxPoints
+                );
+                if (history.length < 2) continue;
+
                 const firstNav = history[0].nav;
 
                 const chartData = history.map(entry => ({
                     x: entry.date,
                     y: firstNav ? ((entry.nav - firstNav) / firstNav) * 100 : 0
                 }));
+                history.forEach(entry => allDates.add(entry.date));
 
                 datasets.push({
                     label: fund.name,
                     data: chartData,
                     borderColor: colors[colorIndex % colors.length],
                     backgroundColor: colors[colorIndex % colors.length] + '20',
-                    tension: 0.3,
+                    tension: period === 'ALL' ? 0.2 : 0.25,
                     fill: false,
-                    pointRadius: 4,
-                    pointHoverRadius: 6
+                    pointRadius: pointRadius,
+                    pointHoverRadius: 5,
+                    borderWidth: 2
                 });
                 colorIndex++;
             }
 
-            // Get all unique dates
-            const allDates = new Set();
-            for (const fundCode in data.funds) {
-                const history = data.funds[fundCode].history || [];
-                history.forEach(entry => allDates.add(entry.date));
-            }
             const labels = Array.from(allDates).sort();
+
+            if (datasets.length === 0) {
+                canvas.style.display = 'none';
+                noDataMsg.style.display = 'block';
+                return;
+            }
 
             // Create chart
             const ctx = canvas.getContext('2d');
-            new Chart(ctx, {
+            fundGrowthChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
@@ -463,8 +571,14 @@
                     plugins: {
                         legend: {
                             position: 'top',
+                            labels: {
+                                boxWidth: 14,
+                                usePointStyle: true
+                            }
                         },
                         tooltip: {
+                            mode: 'nearest',
+                            intersect: false,
                             callbacks: {
                                 label: function(context) {
                                     const val = context.parsed.y;
@@ -483,7 +597,8 @@
                             },
                             ticks: {
                                 callback: function(value) {
-                                    return (value >= 0 ? '+' : '') + value + '%';
+                                    const decimals = Math.abs(value) < 10 ? 1 : 0;
+                                    return (value >= 0 ? '+' : '') + value.toFixed(decimals) + '%';
                                 }
                             }
                         },
@@ -491,6 +606,14 @@
                             title: {
                                 display: true,
                                 text: 'Date'
+                            },
+                            ticks: {
+                                autoSkip: true,
+                                maxTicksLimit: config.maxTicks,
+                                maxRotation: 0,
+                                callback: function(value) {
+                                    return formatTickDate(this.getLabelForValue(value));
+                                }
                             }
                         }
                     }
@@ -532,10 +655,11 @@
                     throw new Error('Failed to load data.json');
                 }
                 const data = await response.json();
+                window._fundData = data;
 
                 updateLastUpdated(data);
                 renderTable(data);
-                renderChart(data);
+                renderChart(data, activeFundChartPeriod);
             } catch (error) {
                 console.error('Error loading data:', error);
                 document.getElementById('fundsTableBody').innerHTML =
@@ -546,6 +670,17 @@
                     'Could not load data.json. Make sure the scraper has been run at least once.';
             }
         }
+
+        document.getElementById('fundChartTabs').addEventListener('click', function(e) {
+            if (!e.target.classList.contains('fund-range-tab')) return;
+
+            const period = e.target.dataset.period;
+            if (!FUND_CHART_PERIODS[period] || !window._fundData) return;
+
+            this.querySelectorAll('.fund-range-tab').forEach(tab => tab.classList.remove('active'));
+            e.target.classList.add('active');
+            renderChart(window._fundData, period);
+        });
 
         init();
 
