@@ -139,16 +139,16 @@ def get_missing_dates(num_days):
     else:
         existing_dates = set()
 
-    # Dates we already know are unavailable (holidays, out of range)
-    unavailable = set(data.get('unavailable_dates', []))
-
-    # Generate business days and filter out ones we already have or are unavailable
+    # Generate business days and filter out ones we already have.
+    # Do not use the legacy unavailable_dates list here: RBC sometimes returns
+    # the previous available date before publishing a new date later that night,
+    # and treating that early miss as permanent causes the scraper to lag.
     all_business_days = get_business_days(num_days)
     missing = []
     for d in all_business_days:
         # Convert YYYYMMDD -> YYYY-MM-DD for comparison
         iso_date = f"{d[:4]}-{d[4:6]}-{d[6:8]}"
-        if iso_date not in existing_dates and d not in unavailable:
+        if iso_date not in existing_dates:
             missing.append(d)
 
     return missing
@@ -201,7 +201,9 @@ def scrape_multiple_dates(dates_to_scrape):
                     skipped_dates.add(date_str)
                     continue
 
-                # If RBC returned a different date than requested, this is a holiday/unavailable date
+                # If RBC returned a different date than requested, this may be a
+                # holiday or it may simply mean today's prices have not posted yet.
+                # Keep it as a run-local skip only so later scheduled runs retry it.
                 requested_iso = f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:8]}"
                 if actual_date != requested_iso:
                     skipped_dates.add(date_str)
@@ -269,19 +271,13 @@ def update_json_data(all_results, skipped_dates=None):
         for fund_code in data['funds']:
             data['funds'][fund_code]['history'].sort(key=lambda x: x['date'])
 
-    # Track dates that RBC doesn't have data for (holidays, out of range)
-    # so we don't keep retrying them
-    if skipped_dates:
-        existing_skipped = set(data.get('unavailable_dates', []))
-        existing_skipped.update(skipped_dates)
-        data['unavailable_dates'] = sorted(existing_skipped)
-
-    # Always update last_checked (when the scraper ran)
-    data['last_checked'] = datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
-
-    # Only update last_updated when new data was actually added
+    # Only update timestamps when new fund data was actually added. This keeps
+    # frequent scheduled retries from creating no-data commits all evening.
     if new_entries_added:
-        data['last_updated'] = datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+        now = datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+        data['last_checked'] = now
+        data['last_updated'] = now
+        data.pop('unavailable_dates', None)
 
     # Set rbc_data_date to the most recent date we have data for,
     # keeping the existing value if it's newer than this scrape's results
@@ -290,7 +286,8 @@ def update_json_data(all_results, skipped_dates=None):
         existing_date = data.get('rbc_data_date', '')
         data['rbc_data_date'] = max(all_dates[-1], existing_date)
 
-    save_data(data)
+    if new_entries_added:
+        save_data(data)
     return data
 
 

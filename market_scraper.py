@@ -50,6 +50,7 @@ def main():
 
     tickers = list(INDICES.keys())
     df = yf.download(tickers, period=period, interval="1d", group_by="ticker")
+    total_added = 0
 
     for ticker in tickers:
         try:
@@ -68,6 +69,7 @@ def main():
                     {"date": date_str, "close": round(float(close), 2)}
                 )
                 added += 1
+                total_added += 1
 
         # Sort by date
         data["indices"][ticker]["history"].sort(key=lambda x: x["date"])
@@ -78,9 +80,12 @@ def main():
 
         print(f"  {INDICES[ticker]}: {added} new entries, {len(data['indices'][ticker]['history'])} total")
 
-    data["last_updated"] = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
-    save_data(data)
-    print(f"\nData saved to {DATA_PATH}")
+    if total_added:
+        data["last_updated"] = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        save_data(data)
+        print(f"\nData saved to {DATA_PATH}")
+    else:
+        print("\nNo new market data found; leaving market_data.json unchanged")
 
 
 if __name__ == "__main__":

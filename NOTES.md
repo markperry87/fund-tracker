@@ -6,10 +6,10 @@ Scrapes daily NAV and % change data for 7 RBC mutual funds from rbcgam.com and d
 ## Architecture
 
 ### Data Flow
-1. GitHub Actions runs `scraper.py` daily at 6 PM EST (11 PM UTC) on weekdays
-2. Scraper visits each fund's individual detail page on RBC's website
+1. GitHub Actions runs `scraper.py` hourly through the evening on weekdays
+2. Scraper visits RBC's mutual fund prices list page with recent date parameters
 3. Extracts NAV, daily change %, and date
-4. Updates `data.json` (only if NAV changed from last entry)
+4. Updates `data.json` when new dated NAV entries are found
 5. Commits and pushes to GitHub
 6. GitHub Pages serves `index.html` which loads `data.json`
 
@@ -35,18 +35,18 @@ RBF5280 - PH&N High Yield Bond
 ## How the Scraper Works
 
 ### URL Pattern
-Each fund has a detail page at:
+The prices list supports a date parameter:
 ```
-https://www.rbcgam.com/en/ca/products/mutual-funds/{FUND_CODE}/detail
+https://www.rbcgam.com/en/ca/products/mutual-funds/?tab=prices&date=YYYYMMDD
 ```
 
 ### Data Extraction
-1. **NAV**: Regex looks for "NAV $" followed by a 4-decimal number (e.g., `14.9716`)
-2. **Date**: Looks for M/D/YYYY format (e.g., `2/2/2026`) near the NAV
-3. **Daily Change %**: Looks for signed percentage patterns
+1. **Date**: Parses the list page's "Fund price/yield as of" date
+2. **NAV**: Finds each fund code, then reads the first 4-decimal NAV value nearby
+3. **Daily Change %**: Looks for a signed percentage shortly after the NAV
 
 ### Duplicate Prevention
-Only adds new history entry if NAV differs from the most recent entry. This prevents duplicate data on weekends/holidays when RBC doesn't update.
+Only adds a new history entry if that fund does not already have an entry for the scraped date.
 
 ### Timestamps
 - `last_checked`: UTC timestamp with 'Z' suffix (browser converts to local timezone)
@@ -60,11 +60,15 @@ Only adds new history entry if NAV differs from the most recent entry. This prev
 
 ### Wrong Daily Change %
 **Problem**: List page has multiple % columns (Yield, Daily Change). Scraper grabbed first one.
-**Solution**: Switched to individual fund detail pages which have cleaner data structure.
+**Solution**: Search for the percentage in a narrow window after the NAV so values from the next fund row are not captured.
 
 ### Stale/Cached Data
 **Problem**: RBC's list page sometimes served cached data to headless browsers.
-**Solution**: Use individual fund detail pages with cache-busting URL parameters.
+**Solution**: Query recent date parameters repeatedly instead of trusting a single same-day request.
+
+### Late RBC Price Updates
+**Problem**: If RBC returned the previous available price date before publishing the requested date later that evening, the scraper stored the requested date as unavailable and skipped it forever.
+**Solution**: Treat unavailable dates as run-local only. Recent missing business days are retried on later scheduled runs until data appears or the date falls out of the lookback window.
 
 ### Timezone Display
 **Problem**: "Last checked" showed wrong time (UTC interpreted as local).

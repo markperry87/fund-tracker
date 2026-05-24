@@ -2,9 +2,16 @@ name: Daily Fund Scraper
 
 on:
   schedule:
-    # Run at 6 PM EST (11 PM UTC) on weekdays (markets close at 4 PM EST)
-    - cron: '0 23 * * 1-5'
+    # Retry hourly through the evening because RBC GAM prices can post late.
+    # Times are UTC: covers late afternoon/evening in Eastern time, including
+    # Friday evening updates that fall on Saturday UTC.
+    - cron: '0 21-23 * * 1-5'
+    - cron: '0 0-5 * * 2-6'
   workflow_dispatch:  # Allow manual trigger
+
+concurrency:
+  group: fund-scraper
+  cancel-in-progress: false
 
 jobs:
   scrape:
