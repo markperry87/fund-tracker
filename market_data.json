@@ -3151,11 +3151,11 @@
     },
     "^GSPTSE": {
       "date": "2026-05-25",
-      "as_of": "2026-05-25T16:25:00Z",
-      "price": 34793.49,
+      "as_of": "2026-05-25T18:10:00Z",
+      "price": 34732.81,
       "reference_price": 34635.81,
-      "change": 157.68,
-      "change_percent": 0.46,
+      "change": 97.0,
+      "change_percent": 0.28,
       "is_open": true,
       "mode": "intraday",
       "label": "Today"
@@ -3172,5 +3172,5 @@
       "label": "1D"
     }
   },
-  "status_last_updated": "2026-05-25T16:27:30.882326Z"
+  "status_last_updated": "2026-05-25T18:12:27.508622Z"
 }
