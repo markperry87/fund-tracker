@@ -3150,15 +3150,15 @@
       "label": "1D"
     },
     "^GSPTSE": {
-      "date": "2026-05-25",
-      "as_of": "2026-05-25T18:10:00Z",
-      "price": 34732.81,
-      "reference_price": 34635.81,
-      "change": 97.0,
-      "change_percent": 0.28,
-      "is_open": true,
-      "mode": "intraday",
-      "label": "Today"
+      "date": "2026-05-22",
+      "as_of": "2026-05-22",
+      "price": 34471.36,
+      "reference_price": 34409.49,
+      "change": 61.87,
+      "change_percent": 0.18,
+      "is_open": false,
+      "mode": "1D",
+      "label": "1D"
     },
     "EFA": {
       "date": "2026-05-22",
@@ -3172,5 +3172,5 @@
       "label": "1D"
     }
   },
-  "status_last_updated": "2026-05-25T18:12:27.508622Z"
+  "status_last_updated": "2026-05-25T20:11:41.483865Z"
 }
