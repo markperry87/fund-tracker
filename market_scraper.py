@@ -1,6 +1,6 @@
 """
-Market Index Scraper
-Fetches daily close prices for S&P 500, TSX Composite, and EFA (MSCI EAFE ETF)
+Market Data Scraper
+Fetches daily close prices for broad benchmarks and underlying iShares ETFs
 from Yahoo Finance using yfinance. Saves to market_data.json.
 """
 
@@ -18,6 +18,9 @@ INDICES = {
     "^GSPC": "S&P 500",
     "^GSPTSE": "TSX Composite",
     "EFA": "MSCI EAFE ETF (EFA)",
+    "XUS.TO": "iShares Core S&P 500 Index ETF (XUS)",
+    "XIC.TO": "iShares Core S&P/TSX Capped Composite Index ETF (XIC)",
+    "XFH.TO": "iShares Core MSCI EAFE IMI Index ETF (CAD-Hedged) (XFH)",
 }
 
 
@@ -186,11 +189,15 @@ def should_include_daily_row(date_str, check_time):
 
 
 def main():
-    print("Market Index Scraper")
+    print("Market Data Scraper")
     print("=" * 60)
 
     data = load_data()
     check_time = now_utc()
+    data.setdefault("indices", {})
+    for ticker, name in INDICES.items():
+        data["indices"].setdefault(ticker, {"name": name, "history": []})
+        data["indices"][ticker]["name"] = name
 
     # First run (empty history) -> backfill 1 year; otherwise fetch last 5 days
     needs_backfill = any(

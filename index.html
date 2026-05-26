@@ -126,6 +126,13 @@
             margin-bottom: 6px;
         }
 
+        .benchmark-asof {
+            display: block;
+            color: #7f8c8d;
+            font-size: 12px;
+            margin: -3px 0 6px;
+        }
+
         .benchmark-chips {
             display: flex;
             flex-wrap: wrap;
@@ -408,6 +415,11 @@
         <div class="market-cards" id="marketCards">
             <div class="loading">Loading market data...</div>
         </div>
+
+        <h2 class="section-title" style="margin-top: 40px;">Underlying ETFs</h2>
+        <div class="market-cards" id="underlyingEtfCards">
+            <div class="loading">Loading ETF data...</div>
+        </div>
     </div>
 
     <script>
@@ -496,6 +508,13 @@
                 .sort();
         }
 
+        function getLatestCommonDate(fundHistoryRaw, benchmarkHistoryRaw) {
+            const fundHistory = normalizeHistory(fundHistoryRaw, 'nav');
+            const benchmarkHistory = normalizeHistory(benchmarkHistoryRaw, 'close');
+            const commonDates = getCommonDates(fundHistory, benchmarkHistory);
+            return commonDates.length ? commonDates[commonDates.length - 1] : null;
+        }
+
         function findReferenceDate(commonDates, endDate, period) {
             const endIndex = commonDates.indexOf(endDate);
             if (endIndex <= 0) return null;
@@ -570,6 +589,12 @@
                 return '<span class="change-neutral">Loading benchmark...</span>';
             }
 
+            const latestFundDate = fundHistory.length ? fundHistory[fundHistory.length - 1].date : null;
+            const latestCommonDate = getLatestCommonDate(fundHistory, benchmarkHistory);
+            const comparisonNote = latestFundDate && latestCommonDate && latestFundDate > latestCommonDate
+                ? `<span class="benchmark-asof">Comparison through ${latestCommonDate}</span>`
+                : '';
+
             const chips = benchmarkPeriods.map(period => {
                 const value = computeRelativePerformance(fundHistory, benchmarkHistory, period);
                 return `
@@ -583,6 +608,7 @@
             return `
                 <div class="benchmark-cell">
                     <span class="benchmark-name">Fund return minus ${benchmark.label}</span>
+                    ${comparisonNote}
                     <div class="benchmark-chips">${chips}</div>
                 </div>
             `;
@@ -884,7 +910,15 @@
         // ---- Market Indices ----
 
         const indexOrder = ['^GSPC', '^GSPTSE', 'EFA'];
-        const indexColors = ['#e74c3c', '#3498db', '#2ecc71'];
+        const etfOrder = ['XUS.TO', 'XIC.TO', 'XFH.TO'];
+        const marketColors = {
+            '^GSPC': '#e74c3c',
+            '^GSPTSE': '#3498db',
+            'EFA': '#2ecc71',
+            'XUS.TO': '#c0392b',
+            'XIC.TO': '#2980b9',
+            'XFH.TO': '#16a085'
+        };
         const marketCharts = {};
 
         const CHART_PERIOD_DAYS = {
@@ -936,12 +970,12 @@
         function formatAbsolute(change, ticker) {
             if (!change) return '';
             const sign = change.absolute >= 0 ? '+' : '';
-            if (ticker === 'EFA') return `${sign}$${change.absolute.toFixed(2)}`;
+            if (!ticker.startsWith('^')) return `${sign}$${change.absolute.toFixed(2)}`;
             return `${sign}${change.absolute.toFixed(2)}`;
         }
 
         function formatPrice(close, ticker) {
-            if (ticker === 'EFA') return `$${close.toFixed(2)}`;
+            if (!ticker.startsWith('^')) return `$${close.toFixed(2)}`;
             return close.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
@@ -1047,8 +1081,12 @@
             });
         }
 
-        function renderMarketCards(marketData) {
-            const container = document.getElementById('marketCards');
+        function marketChartId(ticker) {
+            return 'mchart-' + ticker.replace(/[^A-Za-z0-9]/g, '');
+        }
+
+        function renderMarketCards(marketData, containerId, tickerOrder) {
+            const container = document.getElementById(containerId);
 
             if (!marketData || !marketData.indices) {
                 container.innerHTML = '<div class="loading">No market data available. Run market_scraper.py first.</div>';
@@ -1057,7 +1095,7 @@
 
             let html = '';
 
-            indexOrder.forEach((ticker, i) => {
+            tickerOrder.forEach(ticker => {
                 const idx = marketData.indices[ticker];
                 if (!idx || !idx.history || idx.history.length === 0) return;
 
@@ -1069,10 +1107,10 @@
                 const currentStatus = normalizeMarketStatus(marketData.status?.[ticker], dayChange, latest);
                 const displayPrice = currentStatus?.price || latest.close;
                 const displayDate = currentStatus?.label === 'Today' ? currentStatus.detail : latest.date;
-                const canvasId = 'mchart-' + ticker.replace('^', '');
+                const canvasId = marketChartId(ticker);
 
                 html += `
-                    <div class="index-card" data-ticker="${ticker}" data-color="${indexColors[i]}">
+                    <div class="index-card" data-ticker="${ticker}" data-color="${marketColors[ticker]}">
                         <div class="card-header">
                             <h3>${idx.name}</h3>
                             <div class="card-price-row">
@@ -1119,11 +1157,11 @@
             container.innerHTML = html || '<div class="loading">No market data available.</div>';
 
             // Create initial charts (1M default)
-            indexOrder.forEach((ticker, i) => {
+            tickerOrder.forEach(ticker => {
                 const idx = marketData.indices[ticker];
                 if (!idx || !idx.history || idx.history.length === 0) return;
-                const canvasId = 'mchart-' + ticker.replace('^', '');
-                marketCharts[canvasId] = createMarketChart(canvasId, idx.history, 30, indexColors[i]);
+                const canvasId = marketChartId(ticker);
+                marketCharts[canvasId] = createMarketChart(canvasId, idx.history, 30, marketColors[ticker]);
             });
         }
 
@@ -1142,7 +1180,7 @@
             card.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             e.target.classList.add('active');
 
-            const canvasId = 'mchart-' + ticker.replace('^', '');
+            const canvasId = marketChartId(ticker);
             if (marketCharts[canvasId]) {
                 marketCharts[canvasId].destroy();
             }
@@ -1158,7 +1196,8 @@
                 if (!response.ok) throw new Error('No market_data.json');
                 const marketData = await response.json();
                 window._marketData = marketData;
-                renderMarketCards(marketData);
+                renderMarketCards(marketData, 'marketCards', indexOrder);
+                renderMarketCards(marketData, 'underlyingEtfCards', etfOrder);
                 if (window._fundData) {
                     renderTable(window._fundData, marketData);
                 }
@@ -1166,6 +1205,8 @@
                 console.error('Error loading market data:', error);
                 document.getElementById('marketCards').innerHTML =
                     '<div class="loading">Could not load market data. Run market_scraper.py first.</div>';
+                document.getElementById('underlyingEtfCards').innerHTML =
+                    '<div class="loading">Could not load ETF data. Run market_scraper.py first.</div>';
             }
         }
 
