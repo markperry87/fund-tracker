@@ -2,11 +2,12 @@ name: Daily Fund Scraper
 
 on:
   schedule:
-    # Retry hourly through the evening because RBC GAM prices can post late.
-    # Times are UTC: covers late afternoon/evening in Eastern time, including
-    # Friday evening updates that fall on Saturday UTC.
-    - cron: '0 21-23 * * 1-5'
-    - cron: '0 0-5 * * 2-6'
+    # Retry hourly from around the market close through late evening because
+    # RBC GAM prices can post late or in batches. Use :17 because GitHub warns
+    # that top-of-hour scheduled jobs are more likely to be delayed or dropped.
+    # Times are UTC and include Friday evening updates that fall on Saturday UTC.
+    - cron: '17 20-23 * * 1-5'
+    - cron: '17 0-5 * * 2-6'
   workflow_dispatch:  # Allow manual trigger
 
 concurrency:
