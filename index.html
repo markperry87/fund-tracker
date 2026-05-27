@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fund Tracker</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="live-config.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -911,6 +912,9 @@
 
         const indexOrder = ['^GSPC', '^GSPTSE', 'EFA'];
         const etfOrder = ['XUS.TO', 'XIC.TO', 'XFH.TO'];
+        const marketTickers = [...indexOrder, ...etfOrder];
+        const LIVE_QUOTES_ENDPOINT = window.FUND_TRACKER_CONFIG?.liveQuotesEndpoint || '';
+        const LIVE_QUOTES_REFRESH_MS = 60 * 1000;
         const marketColors = {
             '^GSPC': '#e74c3c',
             '^GSPTSE': '#3498db',
@@ -920,6 +924,7 @@
             'XFH.TO': '#16a085'
         };
         const marketCharts = {};
+        const activeMarketPeriods = {};
 
         const CHART_PERIOD_DAYS = {
             '1W': 7,
@@ -994,6 +999,7 @@
             if (!rawStatus) {
                 if (!dayChange) return null;
                 return {
+                    date: latest.date,
                     label: '1D',
                     price: latest.close,
                     percent: dayChange.percent,
@@ -1007,6 +1013,7 @@
                 : 'since prev close';
 
             return {
+                date: rawStatus.date || latest.date,
                 label: rawStatus.label || (rawStatus.is_open ? 'Today' : '1D'),
                 price: rawStatus.price,
                 percent: rawStatus.change_percent,
@@ -1085,6 +1092,52 @@
             return 'mchart-' + ticker.replace(/[^A-Za-z0-9]/g, '');
         }
 
+        function mergeLiveQuotes(marketData, liveData) {
+            if (!liveData?.quotes) return marketData;
+
+            const merged = JSON.parse(JSON.stringify(marketData));
+            merged.status = merged.status || {};
+
+            marketTickers.forEach(ticker => {
+                const quote = liveData.quotes[ticker];
+                const idx = merged.indices?.[ticker];
+                if (!quote || !idx) return;
+
+                merged.status[ticker] = quote;
+
+                // Completed daily prices can update all card statistics immediately.
+                if (!quote.is_open && quote.date && Number.isFinite(quote.price)) {
+                    const existing = idx.history.find(entry => entry.date === quote.date);
+                    if (existing) {
+                        existing.close = quote.price;
+                    } else {
+                        idx.history.push({ date: quote.date, close: quote.price });
+                        idx.history.sort((a, b) => a.date.localeCompare(b.date));
+                    }
+                }
+            });
+
+            return merged;
+        }
+
+        async function fetchLiveQuotes() {
+            if (!LIVE_QUOTES_ENDPOINT) return null;
+
+            try {
+                const query = encodeURIComponent(marketTickers.join(','));
+                const separator = LIVE_QUOTES_ENDPOINT.includes('?') ? '&' : '?';
+                const response = await fetch(
+                    `${LIVE_QUOTES_ENDPOINT}${separator}symbols=${query}&t=${Date.now()}`,
+                    { cache: 'no-store' }
+                );
+                if (!response.ok) throw new Error(`Live quote response ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                console.warn('Live market quotes unavailable; showing saved market data.', error);
+                return null;
+            }
+        }
+
         function renderMarketCards(marketData, containerId, tickerOrder) {
             const container = document.getElementById(containerId);
 
@@ -1094,6 +1147,14 @@
             }
 
             let html = '';
+
+            tickerOrder.forEach(ticker => {
+                const canvasId = marketChartId(ticker);
+                if (marketCharts[canvasId]) {
+                    marketCharts[canvasId].destroy();
+                    delete marketCharts[canvasId];
+                }
+            });
 
             tickerOrder.forEach(ticker => {
                 const idx = marketData.indices[ticker];
@@ -1106,8 +1167,11 @@
                 const yearChange = computeChange(idx.history, 365);
                 const currentStatus = normalizeMarketStatus(marketData.status?.[ticker], dayChange, latest);
                 const displayPrice = currentStatus?.price || latest.close;
-                const displayDate = currentStatus?.label === 'Today' ? currentStatus.detail : latest.date;
+                const displayDate = currentStatus?.label === 'Today'
+                    ? currentStatus.detail
+                    : currentStatus?.date || latest.date;
                 const canvasId = marketChartId(ticker);
+                const activePeriod = activeMarketPeriods[ticker] || '1M';
 
                 html += `
                     <div class="index-card" data-ticker="${ticker}" data-color="${marketColors[ticker]}">
@@ -1142,10 +1206,10 @@
                             </div>
                         </div>
                         <div class="chart-tabs">
-                            <button class="tab" data-period="1W">1W</button>
-                            <button class="tab active" data-period="1M">1M</button>
-                            <button class="tab" data-period="3M">3M</button>
-                            <button class="tab" data-period="1Y">1Y</button>
+                            <button class="tab ${activePeriod === '1W' ? 'active' : ''}" data-period="1W">1W</button>
+                            <button class="tab ${activePeriod === '1M' ? 'active' : ''}" data-period="1M">1M</button>
+                            <button class="tab ${activePeriod === '3M' ? 'active' : ''}" data-period="3M">3M</button>
+                            <button class="tab ${activePeriod === '1Y' ? 'active' : ''}" data-period="1Y">1Y</button>
                         </div>
                         <div class="card-chart-wrapper">
                             <canvas id="${canvasId}"></canvas>
@@ -1161,7 +1225,13 @@
                 const idx = marketData.indices[ticker];
                 if (!idx || !idx.history || idx.history.length === 0) return;
                 const canvasId = marketChartId(ticker);
-                marketCharts[canvasId] = createMarketChart(canvasId, idx.history, 30, marketColors[ticker]);
+                const period = activeMarketPeriods[ticker] || '1M';
+                marketCharts[canvasId] = createMarketChart(
+                    canvasId,
+                    idx.history,
+                    CHART_PERIOD_DAYS[period],
+                    marketColors[ticker]
+                );
             });
         }
 
@@ -1179,6 +1249,7 @@
 
             card.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             e.target.classList.add('active');
+            activeMarketPeriods[ticker] = period;
 
             const canvasId = marketChartId(ticker);
             if (marketCharts[canvasId]) {
@@ -1194,7 +1265,9 @@
             try {
                 const response = await fetch(`market_data.json?t=${Date.now()}`);
                 if (!response.ok) throw new Error('No market_data.json');
-                const marketData = await response.json();
+                const savedMarketData = await response.json();
+                const liveData = await fetchLiveQuotes();
+                const marketData = mergeLiveQuotes(savedMarketData, liveData);
                 window._marketData = marketData;
                 renderMarketCards(marketData, 'marketCards', indexOrder);
                 renderMarketCards(marketData, 'underlyingEtfCards', etfOrder);
@@ -1203,14 +1276,19 @@
                 }
             } catch (error) {
                 console.error('Error loading market data:', error);
-                document.getElementById('marketCards').innerHTML =
-                    '<div class="loading">Could not load market data. Run market_scraper.py first.</div>';
-                document.getElementById('underlyingEtfCards').innerHTML =
-                    '<div class="loading">Could not load ETF data. Run market_scraper.py first.</div>';
+                if (!window._marketData) {
+                    document.getElementById('marketCards').innerHTML =
+                        '<div class="loading">Could not load market data. Run market_scraper.py first.</div>';
+                    document.getElementById('underlyingEtfCards').innerHTML =
+                        '<div class="loading">Could not load ETF data. Run market_scraper.py first.</div>';
+                }
             }
         }
 
         initMarket();
+        if (LIVE_QUOTES_ENDPOINT) {
+            setInterval(initMarket, LIVE_QUOTES_REFRESH_MS);
+        }
     </script>
 </body>
 </html>
