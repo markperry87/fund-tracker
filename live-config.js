@@ -1,4 +1,3 @@
 window.FUND_TRACKER_CONFIG = {
-    // Add the deployed Worker /quotes URL here to enable live card updates.
-    liveQuotesEndpoint: ''
+    liveQuotesEndpoint: 'https://dayline-api.copper-field-7n4q92.workers.dev/quotes'
 };
