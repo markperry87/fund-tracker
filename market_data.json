@@ -2094,10 +2094,6 @@
       "name": "MSCI EAFE ETF (EFA)",
       "history": [
         {
-          "date": "2025-05-16",
-          "close": 84.23
-        },
-        {
           "date": "2025-05-19",
           "close": 85.03
         },
@@ -3132,6 +3128,10 @@
         {
           "date": "2026-05-29",
           "close": 104.8
+        },
+        {
+          "date": "2026-06-01",
+          "close": 104.44
         }
       ]
     },
@@ -6223,7 +6223,7 @@
       ]
     }
   },
-  "last_updated": "2026-06-01T22:22:46.583769Z",
+  "last_updated": "2026-06-01T23:53:11.186924Z",
   "status": {
     "^GSPC": {
       "date": "2026-06-01",
@@ -6248,12 +6248,12 @@
       "label": "1D"
     },
     "EFA": {
-      "date": "2026-05-29",
-      "as_of": "2026-05-29",
-      "price": 104.8,
-      "reference_price": 104.69,
-      "change": 0.11,
-      "change_percent": 0.11,
+      "date": "2026-06-01",
+      "as_of": "2026-06-01",
+      "price": 104.44,
+      "reference_price": 104.8,
+      "change": -0.36,
+      "change_percent": -0.34,
       "is_open": false,
       "mode": "1D",
       "label": "1D"
@@ -6292,5 +6292,5 @@
       "label": "1D"
     }
   },
-  "status_last_updated": "2026-06-01T22:22:46.583769Z"
+  "status_last_updated": "2026-06-01T23:53:11.186924Z"
 }
