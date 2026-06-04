@@ -4,10 +4,6 @@
       "name": "S&P 500",
       "history": [
         {
-          "date": "2025-05-21",
-          "close": 5844.61
-        },
-        {
           "date": "2025-05-22",
           "close": 5842.01
         },
@@ -1042,16 +1038,16 @@
         {
           "date": "2026-06-03",
           "close": 7553.68
+        },
+        {
+          "date": "2026-06-04",
+          "close": 7584.31
         }
       ]
     },
     "^GSPTSE": {
       "name": "TSX Composite",
       "history": [
-        {
-          "date": "2025-05-22",
-          "close": 25854.0
-        },
         {
           "date": "2025-05-23",
           "close": 25880.0
@@ -2087,16 +2083,16 @@
         {
           "date": "2026-06-03",
           "close": 34801.54
+        },
+        {
+          "date": "2026-06-04",
+          "close": 35217.06
         }
       ]
     },
     "EFA": {
       "name": "MSCI EAFE ETF (EFA)",
       "history": [
-        {
-          "date": "2025-05-21",
-          "close": 84.93
-        },
         {
           "date": "2025-05-22",
           "close": 84.89
@@ -3132,6 +3128,10 @@
         {
           "date": "2026-06-03",
           "close": 104.12
+        },
+        {
+          "date": "2026-06-04",
+          "close": 104.95
         }
       ]
     },
@@ -4169,6 +4169,10 @@
         {
           "date": "2026-06-03",
           "close": 65.05
+        },
+        {
+          "date": "2026-06-04",
+          "close": 65.36
         }
       ]
     },
@@ -5206,6 +5210,10 @@
         {
           "date": "2026-06-03",
           "close": 55.69
+        },
+        {
+          "date": "2026-06-04",
+          "close": 56.37
         }
       ]
     },
@@ -6243,78 +6251,82 @@
         {
           "date": "2026-06-03",
           "close": 41.47
+        },
+        {
+          "date": "2026-06-04",
+          "close": 41.76
         }
       ]
     }
   },
-  "last_updated": "2026-06-03T21:36:37.761191Z",
+  "last_updated": "2026-06-04T21:48:39.087700Z",
   "status": {
     "^GSPC": {
       "date": "2026-06-04",
-      "as_of": "2026-06-04T19:35:00Z",
-      "price": 7595.58,
-      "reference_price": 7516.54,
-      "change": 79.04,
-      "change_percent": 1.05,
-      "is_open": true,
-      "mode": "intraday",
-      "label": "Today"
+      "as_of": "2026-06-04",
+      "price": 7584.31,
+      "reference_price": 7553.68,
+      "change": 30.63,
+      "change_percent": 0.41,
+      "is_open": false,
+      "mode": "1D",
+      "label": "1D"
     },
     "^GSPTSE": {
       "date": "2026-06-04",
-      "as_of": "2026-06-04T19:35:00Z",
-      "price": 35252.3,
-      "reference_price": 34886.38,
-      "change": 365.92,
-      "change_percent": 1.05,
-      "is_open": true,
-      "mode": "intraday",
-      "label": "Today"
+      "as_of": "2026-06-04",
+      "price": 35217.06,
+      "reference_price": 34801.54,
+      "change": 415.52,
+      "change_percent": 1.19,
+      "is_open": false,
+      "mode": "1D",
+      "label": "1D"
     },
     "EFA": {
       "date": "2026-06-04",
-      "as_of": "2026-06-04T19:35:00Z",
-      "price": 104.99,
-      "reference_price": 104.54,
-      "change": 0.44,
-      "change_percent": 0.43,
-      "is_open": true,
-      "mode": "intraday",
-      "label": "Today"
+      "as_of": "2026-06-04",
+      "price": 104.95,
+      "reference_price": 104.12,
+      "change": 0.83,
+      "change_percent": 0.8,
+      "is_open": false,
+      "mode": "1D",
+      "label": "1D"
     },
     "XUS.TO": {
       "date": "2026-06-04",
-      "as_of": "2026-06-04T19:35:00Z",
-      "price": 65.42,
-      "reference_price": 64.92,
-      "change": 0.5,
-      "change_percent": 0.77,
-      "is_open": true,
-      "mode": "intraday",
-      "label": "Today"
+      "as_of": "2026-06-04",
+      "price": 65.36,
+      "reference_price": 65.05,
+      "change": 0.31,
+      "change_percent": 0.48,
+      "is_open": false,
+      "mode": "1D",
+      "label": "1D"
     },
     "XIC.TO": {
       "date": "2026-06-04",
-      "as_of": "2026-06-04T19:35:00Z",
-      "price": 56.41,
-      "reference_price": 55.83,
-      "change": 0.58,
-      "change_percent": 1.04,
-      "is_open": true,
-      "mode": "intraday",
-      "label": "Today"
+      "as_of": "2026-06-04",
+      "price": 56.37,
+      "reference_price": 55.69,
+      "change": 0.68,
+      "change_percent": 1.22,
+      "is_open": false,
+      "mode": "1D",
+      "label": "1D"
     },
     "XFH.TO": {
       "date": "2026-06-04",
-      "as_of": "2026-06-04T19:35:00Z",
-      "price": 41.8,
-      "reference_price": 41.63,
-      "change": 0.17,
-      "change_percent": 0.41,
-      "is_open": true,
-      "mode": "intraday",
-      "label": "Today"
+      "as_of": "2026-06-04",
+      "price": 41.76,
+      "reference_price": 41.47,
+      "change": 0.29,
+      "change_percent": 0.7,
+      "is_open": false,
+      "mode": "1D",
+      "label": "1D"
     }
   },
-  "status_last_updated": "2026-06-04T19:38:22.993003Z"
+  "status_last_updated": "2026-06-04T21:48:39.087700Z"
 }
