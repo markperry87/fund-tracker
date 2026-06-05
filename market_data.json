@@ -5218,6 +5218,10 @@
         {
           "date": "2026-06-04",
           "close": 56.37
+        },
+        {
+          "date": "2026-06-05",
+          "close": 55.06
         }
       ]
     },
@@ -6267,7 +6271,7 @@
       ]
     }
   },
-  "last_updated": "2026-06-05T21:10:13.161557Z",
+  "last_updated": "2026-06-05T22:44:23.092233Z",
   "status": {
     "^GSPC": {
       "date": "2026-06-05",
@@ -6314,12 +6318,12 @@
       "label": "1D"
     },
     "XIC.TO": {
-      "date": "2026-06-04",
-      "as_of": "2026-06-04",
-      "price": 56.37,
-      "reference_price": 55.69,
-      "change": 0.68,
-      "change_percent": 1.22,
+      "date": "2026-06-05",
+      "as_of": "2026-06-05",
+      "price": 55.06,
+      "reference_price": 56.37,
+      "change": -1.31,
+      "change_percent": -2.32,
       "is_open": false,
       "mode": "1D",
       "label": "1D"
@@ -6336,5 +6340,5 @@
       "label": "1D"
     }
   },
-  "status_last_updated": "2026-06-05T21:10:13.161557Z"
+  "status_last_updated": "2026-06-05T22:44:23.092233Z"
 }
