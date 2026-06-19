@@ -1049,10 +1049,6 @@
       "name": "TSX Composite",
       "history": [
         {
-          "date": "2025-06-06",
-          "close": 26429.1
-        },
-        {
           "date": "2025-06-09",
           "close": 26375.8
         },
@@ -2087,6 +2083,10 @@
         {
           "date": "2026-06-18",
           "close": 34969.26
+        },
+        {
+          "date": "2026-06-19",
+          "close": 34857.34
         }
       ]
     },
@@ -3139,10 +3139,6 @@
       "name": "iShares Core S&P 500 Index ETF (XUS)",
       "history": [
         {
-          "date": "2025-06-06",
-          "close": 50.44
-        },
-        {
           "date": "2025-06-09",
           "close": 50.44
         },
@@ -4177,16 +4173,16 @@
         {
           "date": "2026-06-18",
           "close": 65.75
+        },
+        {
+          "date": "2026-06-19",
+          "close": 65.89
         }
       ]
     },
     "XIC.TO": {
       "name": "iShares Core S&P/TSX Capped Composite Index ETF (XIC)",
       "history": [
-        {
-          "date": "2025-06-06",
-          "close": 41.33
-        },
         {
           "date": "2025-06-09",
           "close": 41.24
@@ -5222,16 +5218,16 @@
         {
           "date": "2026-06-18",
           "close": 56.02
+        },
+        {
+          "date": "2026-06-19",
+          "close": 55.8
         }
       ]
     },
     "XFH.TO": {
       "name": "iShares Core MSCI EAFE IMI Index ETF (CAD-Hedged) (XFH)",
       "history": [
-        {
-          "date": "2025-06-06",
-          "close": 34.07
-        },
         {
           "date": "2025-06-09",
           "close": 33.98
@@ -6267,11 +6263,15 @@
         {
           "date": "2026-06-18",
           "close": 42.66
+        },
+        {
+          "date": "2026-06-19",
+          "close": 42.53
         }
       ]
     }
   },
-  "last_updated": "2026-06-18T22:21:11.774140Z",
+  "last_updated": "2026-06-19T20:53:07.762956Z",
   "status": {
     "^GSPC": {
       "date": "2026-06-18",
@@ -6286,14 +6286,14 @@
     },
     "^GSPTSE": {
       "date": "2026-06-19",
-      "as_of": "2026-06-19T19:00:00Z",
-      "price": 34994.99,
-      "reference_price": 34894.8,
-      "change": 100.19,
-      "change_percent": 0.29,
-      "is_open": true,
-      "mode": "intraday",
-      "label": "Today"
+      "as_of": "2026-06-19",
+      "price": 34857.34,
+      "reference_price": 34969.26,
+      "change": -111.92,
+      "change_percent": -0.32,
+      "is_open": false,
+      "mode": "1D",
+      "label": "1D"
     },
     "EFA": {
       "date": "2026-06-18",
@@ -6308,37 +6308,37 @@
     },
     "XUS.TO": {
       "date": "2026-06-19",
-      "as_of": "2026-06-19T18:55:00Z",
-      "price": 65.86,
-      "reference_price": 65.63,
-      "change": 0.23,
-      "change_percent": 0.35,
-      "is_open": true,
-      "mode": "intraday",
-      "label": "Today"
+      "as_of": "2026-06-19",
+      "price": 65.89,
+      "reference_price": 65.75,
+      "change": 0.14,
+      "change_percent": 0.21,
+      "is_open": false,
+      "mode": "1D",
+      "label": "1D"
     },
     "XIC.TO": {
       "date": "2026-06-19",
-      "as_of": "2026-06-19T19:00:00Z",
-      "price": 56.06,
-      "reference_price": 55.86,
-      "change": 0.2,
-      "change_percent": 0.36,
-      "is_open": true,
-      "mode": "intraday",
-      "label": "Today"
+      "as_of": "2026-06-19",
+      "price": 55.8,
+      "reference_price": 56.02,
+      "change": -0.22,
+      "change_percent": -0.39,
+      "is_open": false,
+      "mode": "1D",
+      "label": "1D"
     },
     "XFH.TO": {
       "date": "2026-06-19",
-      "as_of": "2026-06-19T18:25:00Z",
-      "price": 42.52,
-      "reference_price": 42.56,
-      "change": -0.04,
-      "change_percent": -0.09,
-      "is_open": true,
-      "mode": "intraday",
-      "label": "Today"
+      "as_of": "2026-06-19",
+      "price": 42.53,
+      "reference_price": 42.66,
+      "change": -0.13,
+      "change_percent": -0.3,
+      "is_open": false,
+      "mode": "1D",
+      "label": "1D"
     }
   },
-  "status_last_updated": "2026-06-19T19:01:31.112455Z"
+  "status_last_updated": "2026-06-19T20:53:07.762956Z"
 }
