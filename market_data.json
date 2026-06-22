@@ -4,10 +4,6 @@
       "name": "S&P 500",
       "history": [
         {
-          "date": "2025-06-06",
-          "close": 6000.36
-        },
-        {
           "date": "2025-06-09",
           "close": 6005.88
         },
@@ -1042,16 +1038,16 @@
         {
           "date": "2026-06-18",
           "close": 7500.58
+        },
+        {
+          "date": "2026-06-22",
+          "close": 7472.79
         }
       ]
     },
     "^GSPTSE": {
       "name": "TSX Composite",
       "history": [
-        {
-          "date": "2025-06-09",
-          "close": 26375.8
-        },
         {
           "date": "2025-06-10",
           "close": 26426.3
@@ -2087,16 +2083,16 @@
         {
           "date": "2026-06-19",
           "close": 34857.34
+        },
+        {
+          "date": "2026-06-22",
+          "close": 35002.18
         }
       ]
     },
     "EFA": {
       "name": "MSCI EAFE ETF (EFA)",
       "history": [
-        {
-          "date": "2025-06-06",
-          "close": 86.64
-        },
         {
           "date": "2025-06-09",
           "close": 86.63
@@ -3132,16 +3128,16 @@
         {
           "date": "2026-06-18",
           "close": 104.41
+        },
+        {
+          "date": "2026-06-22",
+          "close": 104.58
         }
       ]
     },
     "XUS.TO": {
       "name": "iShares Core S&P 500 Index ETF (XUS)",
       "history": [
-        {
-          "date": "2025-06-09",
-          "close": 50.44
-        },
         {
           "date": "2025-06-10",
           "close": 50.68
@@ -4177,16 +4173,16 @@
         {
           "date": "2026-06-19",
           "close": 65.89
+        },
+        {
+          "date": "2026-06-22",
+          "close": 65.59
         }
       ]
     },
     "XIC.TO": {
       "name": "iShares Core S&P/TSX Capped Composite Index ETF (XIC)",
       "history": [
-        {
-          "date": "2025-06-09",
-          "close": 41.24
-        },
         {
           "date": "2025-06-10",
           "close": 41.34
@@ -5222,16 +5218,16 @@
         {
           "date": "2026-06-19",
           "close": 55.8
+        },
+        {
+          "date": "2026-06-22",
+          "close": 56.09
         }
       ]
     },
     "XFH.TO": {
       "name": "iShares Core MSCI EAFE IMI Index ETF (CAD-Hedged) (XFH)",
       "history": [
-        {
-          "date": "2025-06-09",
-          "close": 33.98
-        },
         {
           "date": "2025-06-10",
           "close": 34.11
@@ -6267,78 +6263,82 @@
         {
           "date": "2026-06-19",
           "close": 42.53
+        },
+        {
+          "date": "2026-06-22",
+          "close": 42.76
         }
       ]
     }
   },
-  "last_updated": "2026-06-19T20:53:07.762956Z",
+  "last_updated": "2026-06-22T21:21:07.778952Z",
   "status": {
     "^GSPC": {
       "date": "2026-06-22",
-      "as_of": "2026-06-22T18:15:00Z",
-      "price": 7479.53,
-      "reference_price": 7500.44,
-      "change": -20.91,
-      "change_percent": -0.28,
-      "is_open": true,
-      "mode": "intraday",
-      "label": "Today"
+      "as_of": "2026-06-22",
+      "price": 7472.79,
+      "reference_price": 7500.58,
+      "change": -27.79,
+      "change_percent": -0.37,
+      "is_open": false,
+      "mode": "1D",
+      "label": "1D"
     },
     "^GSPTSE": {
       "date": "2026-06-22",
-      "as_of": "2026-06-22T18:15:00Z",
-      "price": 35028.52,
-      "reference_price": 34857.79,
-      "change": 170.73,
-      "change_percent": 0.49,
-      "is_open": true,
-      "mode": "intraday",
-      "label": "Today"
+      "as_of": "2026-06-22",
+      "price": 35002.18,
+      "reference_price": 34857.34,
+      "change": 144.84,
+      "change_percent": 0.42,
+      "is_open": false,
+      "mode": "1D",
+      "label": "1D"
     },
     "EFA": {
       "date": "2026-06-22",
-      "as_of": "2026-06-22T18:15:00Z",
-      "price": 104.57,
-      "reference_price": 104.59,
-      "change": -0.02,
-      "change_percent": -0.02,
-      "is_open": true,
-      "mode": "intraday",
-      "label": "Today"
+      "as_of": "2026-06-22",
+      "price": 104.58,
+      "reference_price": 104.41,
+      "change": 0.17,
+      "change_percent": 0.16,
+      "is_open": false,
+      "mode": "1D",
+      "label": "1D"
     },
     "XUS.TO": {
       "date": "2026-06-22",
-      "as_of": "2026-06-22T18:10:00Z",
-      "price": 65.62,
-      "reference_price": 65.97,
-      "change": -0.35,
-      "change_percent": -0.53,
-      "is_open": true,
-      "mode": "intraday",
-      "label": "Today"
+      "as_of": "2026-06-22",
+      "price": 65.59,
+      "reference_price": 65.89,
+      "change": -0.3,
+      "change_percent": -0.46,
+      "is_open": false,
+      "mode": "1D",
+      "label": "1D"
     },
     "XIC.TO": {
       "date": "2026-06-22",
-      "as_of": "2026-06-22T18:10:00Z",
-      "price": 56.11,
-      "reference_price": 55.84,
-      "change": 0.27,
-      "change_percent": 0.48,
-      "is_open": true,
-      "mode": "intraday",
-      "label": "Today"
+      "as_of": "2026-06-22",
+      "price": 56.09,
+      "reference_price": 55.8,
+      "change": 0.29,
+      "change_percent": 0.52,
+      "is_open": false,
+      "mode": "1D",
+      "label": "1D"
     },
     "XFH.TO": {
       "date": "2026-06-22",
-      "as_of": "2026-06-22T18:05:00Z",
-      "price": 42.72,
-      "reference_price": 42.8,
-      "change": -0.08,
-      "change_percent": -0.19,
-      "is_open": true,
-      "mode": "intraday",
-      "label": "Today"
+      "as_of": "2026-06-22",
+      "price": 42.76,
+      "reference_price": 42.53,
+      "change": 0.23,
+      "change_percent": 0.54,
+      "is_open": false,
+      "mode": "1D",
+      "label": "1D"
     }
   },
-  "status_last_updated": "2026-06-22T18:15:29.360085Z"
+  "status_last_updated": "2026-06-22T21:21:07.778952Z"
 }
