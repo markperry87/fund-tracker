@@ -6275,11 +6275,11 @@
   "status": {
     "^GSPC": {
       "date": "2026-07-01",
-      "as_of": "2026-07-01T16:30:00Z",
-      "price": 7518.84,
+      "as_of": "2026-07-01T19:00:00Z",
+      "price": 7499.57,
       "reference_price": 7478.84,
-      "change": 40.0,
-      "change_percent": 0.53,
+      "change": 20.73,
+      "change_percent": 0.28,
       "is_open": true,
       "mode": "intraday",
       "label": "Today"
@@ -6297,11 +6297,11 @@
     },
     "EFA": {
       "date": "2026-07-01",
-      "as_of": "2026-07-01T16:30:00Z",
-      "price": 103.4,
+      "as_of": "2026-07-01T19:00:00Z",
+      "price": 103.11,
       "reference_price": 103.07,
-      "change": 0.33,
-      "change_percent": 0.32,
+      "change": 0.04,
+      "change_percent": 0.03,
       "is_open": true,
       "mode": "intraday",
       "label": "Today"
@@ -6340,5 +6340,5 @@
       "label": "1D"
     }
   },
-  "status_last_updated": "2026-07-01T16:31:41.691263Z"
+  "status_last_updated": "2026-07-01T19:02:27.875059Z"
 }
