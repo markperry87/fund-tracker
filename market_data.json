@@ -6286,11 +6286,11 @@
     },
     "^GSPTSE": {
       "date": "2026-07-03",
-      "as_of": "2026-07-03T15:55:00Z",
-      "price": 35278.48,
+      "as_of": "2026-07-03T17:40:00Z",
+      "price": 35252.14,
       "reference_price": 35082.35,
-      "change": 196.13,
-      "change_percent": 0.56,
+      "change": 169.79,
+      "change_percent": 0.48,
       "is_open": true,
       "mode": "intraday",
       "label": "Today"
@@ -6308,37 +6308,37 @@
     },
     "XUS.TO": {
       "date": "2026-07-03",
-      "as_of": "2026-07-03T15:50:00Z",
-      "price": 65.91,
+      "as_of": "2026-07-03T17:30:00Z",
+      "price": 66.07,
       "reference_price": 66.0,
-      "change": -0.09,
-      "change_percent": -0.14,
+      "change": 0.07,
+      "change_percent": 0.11,
       "is_open": true,
       "mode": "intraday",
       "label": "Today"
     },
     "XIC.TO": {
       "date": "2026-07-03",
-      "as_of": "2026-07-03T15:50:00Z",
-      "price": 56.3,
+      "as_of": "2026-07-03T17:40:00Z",
+      "price": 56.26,
       "reference_price": 56.0,
-      "change": 0.3,
-      "change_percent": 0.54,
+      "change": 0.26,
+      "change_percent": 0.46,
       "is_open": true,
       "mode": "intraday",
       "label": "Today"
     },
     "XFH.TO": {
       "date": "2026-07-03",
-      "as_of": "2026-07-03T15:30:00Z",
-      "price": 42.41,
+      "as_of": "2026-07-03T16:50:00Z",
+      "price": 42.46,
       "reference_price": 42.29,
-      "change": 0.12,
-      "change_percent": 0.28,
+      "change": 0.17,
+      "change_percent": 0.4,
       "is_open": true,
       "mode": "intraday",
       "label": "Today"
     }
   },
-  "status_last_updated": "2026-07-03T15:55:45.458348Z"
+  "status_last_updated": "2026-07-03T17:41:26.873567Z"
 }
