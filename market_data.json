@@ -1049,10 +1049,6 @@
       "name": "TSX Composite",
       "history": [
         {
-          "date": "2025-06-19",
-          "close": 26503.3
-        },
-        {
           "date": "2025-06-20",
           "close": 26497.6
         },
@@ -2087,6 +2083,10 @@
         {
           "date": "2026-07-02",
           "close": 34966.67
+        },
+        {
+          "date": "2026-07-03",
+          "close": 35274.84
         }
       ]
     },
@@ -3139,10 +3139,6 @@
       "name": "iShares Core S&P 500 Index ETF (XUS)",
       "history": [
         {
-          "date": "2025-06-19",
-          "close": 50.17
-        },
-        {
           "date": "2025-06-20",
           "close": 50.3
         },
@@ -4177,16 +4173,16 @@
         {
           "date": "2026-07-02",
           "close": 65.5
+        },
+        {
+          "date": "2026-07-03",
+          "close": 65.61
         }
       ]
     },
     "XIC.TO": {
       "name": "iShares Core S&P/TSX Capped Composite Index ETF (XIC)",
       "history": [
-        {
-          "date": "2025-06-19",
-          "close": 41.53
-        },
         {
           "date": "2025-06-20",
           "close": 41.49
@@ -5222,16 +5218,16 @@
         {
           "date": "2026-07-02",
           "close": 55.8
+        },
+        {
+          "date": "2026-07-03",
+          "close": 56.28
         }
       ]
     },
     "XFH.TO": {
       "name": "iShares Core MSCI EAFE IMI Index ETF (CAD-Hedged) (XFH)",
       "history": [
-        {
-          "date": "2025-06-19",
-          "close": 33.57
-        },
         {
           "date": "2025-06-20",
           "close": 33.38
@@ -6267,11 +6263,15 @@
         {
           "date": "2026-07-02",
           "close": 42.07
+        },
+        {
+          "date": "2026-07-03",
+          "close": 42.42
         }
       ]
     }
   },
-  "last_updated": "2026-07-02T21:46:55.069507Z",
+  "last_updated": "2026-07-03T21:16:01.777457Z",
   "status": {
     "^GSPC": {
       "date": "2026-07-02",
@@ -6286,14 +6286,14 @@
     },
     "^GSPTSE": {
       "date": "2026-07-03",
-      "as_of": "2026-07-03T19:40:00Z",
-      "price": 35257.06,
-      "reference_price": 35082.35,
-      "change": 174.71,
-      "change_percent": 0.5,
-      "is_open": true,
-      "mode": "intraday",
-      "label": "Today"
+      "as_of": "2026-07-03",
+      "price": 35274.84,
+      "reference_price": 34966.67,
+      "change": 308.17,
+      "change_percent": 0.88,
+      "is_open": false,
+      "mode": "1D",
+      "label": "1D"
     },
     "EFA": {
       "date": "2026-07-02",
@@ -6308,37 +6308,37 @@
     },
     "XUS.TO": {
       "date": "2026-07-03",
-      "as_of": "2026-07-03T19:40:00Z",
-      "price": 66.03,
-      "reference_price": 66.0,
-      "change": 0.03,
-      "change_percent": 0.05,
-      "is_open": true,
-      "mode": "intraday",
-      "label": "Today"
+      "as_of": "2026-07-03",
+      "price": 65.61,
+      "reference_price": 65.5,
+      "change": 0.11,
+      "change_percent": 0.17,
+      "is_open": false,
+      "mode": "1D",
+      "label": "1D"
     },
     "XIC.TO": {
       "date": "2026-07-03",
-      "as_of": "2026-07-03T19:35:00Z",
-      "price": 56.25,
-      "reference_price": 56.0,
-      "change": 0.25,
-      "change_percent": 0.45,
-      "is_open": true,
-      "mode": "intraday",
-      "label": "Today"
+      "as_of": "2026-07-03",
+      "price": 56.28,
+      "reference_price": 55.8,
+      "change": 0.48,
+      "change_percent": 0.86,
+      "is_open": false,
+      "mode": "1D",
+      "label": "1D"
     },
     "XFH.TO": {
       "date": "2026-07-03",
-      "as_of": "2026-07-03T19:00:00Z",
-      "price": 42.44,
-      "reference_price": 42.29,
-      "change": 0.15,
-      "change_percent": 0.35,
-      "is_open": true,
-      "mode": "intraday",
-      "label": "Today"
+      "as_of": "2026-07-03",
+      "price": 42.42,
+      "reference_price": 42.07,
+      "change": 0.35,
+      "change_percent": 0.83,
+      "is_open": false,
+      "mode": "1D",
+      "label": "1D"
     }
   },
-  "status_last_updated": "2026-07-03T19:40:18.445430Z"
+  "status_last_updated": "2026-07-03T21:16:01.777457Z"
 }
