@@ -5229,10 +5229,6 @@
       "name": "iShares Core MSCI EAFE IMI Index ETF (CAD-Hedged) (XFH)",
       "history": [
         {
-          "date": "2025-07-03",
-          "close": 34.2
-        },
-        {
           "date": "2025-07-04",
           "close": 34.06
         },
@@ -6267,11 +6263,15 @@
         {
           "date": "2026-07-15",
           "close": 41.98
+        },
+        {
+          "date": "2026-07-16",
+          "close": 41.8
         }
       ]
     }
   },
-  "last_updated": "2026-07-16T21:35:09.791149Z",
+  "last_updated": "2026-07-16T23:03:51.535608Z",
   "status": {
     "^GSPC": {
       "date": "2026-07-16",
@@ -6329,16 +6329,16 @@
       "label": "1D"
     },
     "XFH.TO": {
-      "date": "2026-07-15",
-      "as_of": "2026-07-15",
-      "price": 41.98,
-      "reference_price": 41.91,
-      "change": 0.07,
-      "change_percent": 0.17,
+      "date": "2026-07-16",
+      "as_of": "2026-07-16",
+      "price": 41.8,
+      "reference_price": 41.98,
+      "change": -0.18,
+      "change_percent": -0.43,
       "is_open": false,
       "mode": "1D",
       "label": "1D"
     }
   },
-  "status_last_updated": "2026-07-16T21:35:09.791149Z"
+  "status_last_updated": "2026-07-16T23:03:51.535608Z"
 }
