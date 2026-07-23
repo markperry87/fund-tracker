@@ -6275,10 +6275,10 @@
   "status": {
     "^GSPC": {
       "date": "2026-07-23",
-      "as_of": "2026-07-23T15:55:00Z",
-      "price": 7397.17,
+      "as_of": "2026-07-23T17:40:00Z",
+      "price": 7397.71,
       "reference_price": 7418.29,
-      "change": -21.12,
+      "change": -20.58,
       "change_percent": -0.28,
       "is_open": true,
       "mode": "intraday",
@@ -6286,44 +6286,44 @@
     },
     "^GSPTSE": {
       "date": "2026-07-23",
-      "as_of": "2026-07-23T15:55:00Z",
-      "price": 35128.96,
+      "as_of": "2026-07-23T17:40:00Z",
+      "price": 35123.31,
       "reference_price": 35364.82,
-      "change": -235.86,
-      "change_percent": -0.67,
+      "change": -241.51,
+      "change_percent": -0.68,
       "is_open": true,
       "mode": "intraday",
       "label": "Today"
     },
     "EFA": {
       "date": "2026-07-23",
-      "as_of": "2026-07-23T15:55:00Z",
-      "price": 102.78,
+      "as_of": "2026-07-23T17:40:00Z",
+      "price": 102.82,
       "reference_price": 102.75,
-      "change": 0.03,
-      "change_percent": 0.02,
+      "change": 0.07,
+      "change_percent": 0.07,
       "is_open": true,
       "mode": "intraday",
       "label": "Today"
     },
     "XUS.TO": {
       "date": "2026-07-23",
-      "as_of": "2026-07-23T15:50:00Z",
-      "price": 64.35,
+      "as_of": "2026-07-23T17:40:00Z",
+      "price": 64.34,
       "reference_price": 64.6,
-      "change": -0.25,
-      "change_percent": -0.39,
+      "change": -0.26,
+      "change_percent": -0.4,
       "is_open": true,
       "mode": "intraday",
       "label": "Today"
     },
     "XIC.TO": {
       "date": "2026-07-23",
-      "as_of": "2026-07-23T15:55:00Z",
-      "price": 56.08,
+      "as_of": "2026-07-23T17:35:00Z",
+      "price": 56.1,
       "reference_price": 56.3,
-      "change": -0.22,
-      "change_percent": -0.39,
+      "change": -0.2,
+      "change_percent": -0.36,
       "is_open": true,
       "mode": "intraday",
       "label": "Today"
@@ -6340,5 +6340,5 @@
       "label": "Today"
     }
   },
-  "status_last_updated": "2026-07-23T15:57:35.626510Z"
+  "status_last_updated": "2026-07-23T17:41:04.617511Z"
 }
