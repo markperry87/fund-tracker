@@ -6274,15 +6274,15 @@
   "last_updated": "2026-07-31T21:40:55.646123Z",
   "status": {
     "^GSPC": {
-      "date": "2026-07-31",
-      "as_of": "2026-07-31",
-      "price": 7489.72,
-      "reference_price": 7437.63,
-      "change": 52.09,
-      "change_percent": 0.7,
-      "is_open": false,
-      "mode": "1D",
-      "label": "1D"
+      "date": "2026-08-03",
+      "as_of": "2026-08-03T16:30:00Z",
+      "price": 7589.73,
+      "reference_price": 7504.78,
+      "change": 84.95,
+      "change_percent": 1.13,
+      "is_open": true,
+      "mode": "intraday",
+      "label": "Today"
     },
     "^GSPTSE": {
       "date": "2026-07-31",
@@ -6296,15 +6296,15 @@
       "label": "1D"
     },
     "EFA": {
-      "date": "2026-07-31",
-      "as_of": "2026-07-31",
-      "price": 105.58,
-      "reference_price": 106.24,
-      "change": -0.66,
-      "change_percent": -0.62,
-      "is_open": false,
-      "mode": "1D",
-      "label": "1D"
+      "date": "2026-08-03",
+      "as_of": "2026-08-03T16:30:00Z",
+      "price": 105.83,
+      "reference_price": 105.72,
+      "change": 0.11,
+      "change_percent": 0.1,
+      "is_open": true,
+      "mode": "intraday",
+      "label": "Today"
     },
     "XUS.TO": {
       "date": "2026-07-31",
@@ -6340,5 +6340,5 @@
       "label": "1D"
     }
   },
-  "status_last_updated": "2026-07-31T21:40:55.646123Z"
+  "status_last_updated": "2026-08-03T16:31:08.412571Z"
 }
