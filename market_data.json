@@ -6274,71 +6274,71 @@
   "last_updated": "2026-08-11T21:24:03.551735Z",
   "status": {
     "^GSPC": {
-      "date": "2026-08-11",
-      "as_of": "2026-08-11",
-      "price": 7728.2,
-      "reference_price": 7753.11,
-      "change": -24.91,
+      "date": "2026-08-12",
+      "as_of": "2026-08-12T15:00:00Z",
+      "price": 7740.57,
+      "reference_price": 7765.46,
+      "change": -24.89,
       "change_percent": -0.32,
-      "is_open": false,
-      "mode": "1D",
-      "label": "1D"
+      "is_open": true,
+      "mode": "intraday",
+      "label": "Today"
     },
     "^GSPTSE": {
-      "date": "2026-08-11",
-      "as_of": "2026-08-11",
-      "price": 36475.92,
-      "reference_price": 36458.33,
-      "change": 17.59,
-      "change_percent": 0.05,
-      "is_open": false,
-      "mode": "1D",
-      "label": "1D"
+      "date": "2026-08-12",
+      "as_of": "2026-08-12T15:00:00Z",
+      "price": 36595.58,
+      "reference_price": 36552.84,
+      "change": 42.74,
+      "change_percent": 0.12,
+      "is_open": true,
+      "mode": "intraday",
+      "label": "Today"
     },
     "EFA": {
-      "date": "2026-08-11",
-      "as_of": "2026-08-11",
-      "price": 108.09,
-      "reference_price": 108.01,
-      "change": 0.08,
-      "change_percent": 0.07,
-      "is_open": false,
-      "mode": "1D",
-      "label": "1D"
+      "date": "2026-08-12",
+      "as_of": "2026-08-12T15:00:00Z",
+      "price": 108.37,
+      "reference_price": 108.75,
+      "change": -0.38,
+      "change_percent": -0.35,
+      "is_open": true,
+      "mode": "intraday",
+      "label": "Today"
     },
     "XUS.TO": {
-      "date": "2026-08-11",
-      "as_of": "2026-08-11",
-      "price": 66.44,
-      "reference_price": 66.79,
-      "change": -0.35,
-      "change_percent": -0.52,
-      "is_open": false,
-      "mode": "1D",
-      "label": "1D"
+      "date": "2026-08-12",
+      "as_of": "2026-08-12T14:55:00Z",
+      "price": 66.63,
+      "reference_price": 66.75,
+      "change": -0.12,
+      "change_percent": -0.18,
+      "is_open": true,
+      "mode": "intraday",
+      "label": "Today"
     },
     "XIC.TO": {
-      "date": "2026-08-11",
-      "as_of": "2026-08-11",
-      "price": 58.3,
-      "reference_price": 58.24,
-      "change": 0.06,
-      "change_percent": 0.1,
-      "is_open": false,
-      "mode": "1D",
-      "label": "1D"
+      "date": "2026-08-12",
+      "as_of": "2026-08-12T15:00:00Z",
+      "price": 58.48,
+      "reference_price": 58.54,
+      "change": -0.06,
+      "change_percent": -0.1,
+      "is_open": true,
+      "mode": "intraday",
+      "label": "Today"
     },
     "XFH.TO": {
-      "date": "2026-08-11",
-      "as_of": "2026-08-11",
-      "price": 43.03,
-      "reference_price": 43.0,
+      "date": "2026-08-12",
+      "as_of": "2026-08-12T14:40:00Z",
+      "price": 43.23,
+      "reference_price": 43.2,
       "change": 0.03,
       "change_percent": 0.07,
-      "is_open": false,
-      "mode": "1D",
-      "label": "1D"
+      "is_open": true,
+      "mode": "intraday",
+      "label": "Today"
     }
   },
-  "status_last_updated": "2026-08-11T21:24:03.551735Z"
+  "status_last_updated": "2026-08-12T15:04:31.219896Z"
 }
