@@ -6275,21 +6275,21 @@
   "status": {
     "^GSPC": {
       "date": "2026-08-17",
-      "as_of": "2026-08-17T17:30:00Z",
-      "price": 7758.59,
+      "as_of": "2026-08-17T18:45:00Z",
+      "price": 7758.27,
       "reference_price": 7790.68,
-      "change": -32.09,
-      "change_percent": -0.41,
+      "change": -32.41,
+      "change_percent": -0.42,
       "is_open": true,
       "mode": "intraday",
       "label": "Today"
     },
     "^GSPTSE": {
       "date": "2026-08-17",
-      "as_of": "2026-08-17T17:30:00Z",
-      "price": 36738.71,
+      "as_of": "2026-08-17T18:45:00Z",
+      "price": 36737.21,
       "reference_price": 36687.38,
-      "change": 51.33,
+      "change": 49.83,
       "change_percent": 0.14,
       "is_open": true,
       "mode": "intraday",
@@ -6297,29 +6297,29 @@
     },
     "EFA": {
       "date": "2026-08-17",
-      "as_of": "2026-08-17T17:30:00Z",
-      "price": 108.49,
+      "as_of": "2026-08-17T18:45:00Z",
+      "price": 108.39,
       "reference_price": 108.66,
-      "change": -0.18,
-      "change_percent": -0.16,
+      "change": -0.28,
+      "change_percent": -0.25,
       "is_open": true,
       "mode": "intraday",
       "label": "Today"
     },
     "XUS.TO": {
       "date": "2026-08-17",
-      "as_of": "2026-08-17T17:30:00Z",
-      "price": 66.51,
+      "as_of": "2026-08-17T18:45:00Z",
+      "price": 66.53,
       "reference_price": 66.6,
-      "change": -0.09,
-      "change_percent": -0.14,
+      "change": -0.07,
+      "change_percent": -0.11,
       "is_open": true,
       "mode": "intraday",
       "label": "Today"
     },
     "XIC.TO": {
       "date": "2026-08-17",
-      "as_of": "2026-08-17T17:30:00Z",
+      "as_of": "2026-08-17T18:45:00Z",
       "price": 58.71,
       "reference_price": 58.68,
       "change": 0.03,
@@ -6330,15 +6330,15 @@
     },
     "XFH.TO": {
       "date": "2026-08-17",
-      "as_of": "2026-08-17T15:35:00Z",
-      "price": 43.13,
+      "as_of": "2026-08-17T17:50:00Z",
+      "price": 43.1,
       "reference_price": 43.08,
-      "change": 0.05,
-      "change_percent": 0.12,
+      "change": 0.02,
+      "change_percent": 0.05,
       "is_open": true,
       "mode": "intraday",
       "label": "Today"
     }
   },
-  "status_last_updated": "2026-08-17T17:33:00.800223Z"
+  "status_last_updated": "2026-08-17T18:49:07.715040Z"
 }
