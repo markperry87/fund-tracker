@@ -6275,62 +6275,62 @@
   "status": {
     "^GSPC": {
       "date": "2026-08-19",
-      "as_of": "2026-08-19T16:35:00Z",
-      "price": 7724.81,
+      "as_of": "2026-08-19T17:30:00Z",
+      "price": 7713.64,
       "reference_price": 7716.74,
-      "change": 8.07,
-      "change_percent": 0.1,
+      "change": -3.1,
+      "change_percent": -0.04,
       "is_open": true,
       "mode": "intraday",
       "label": "Today"
     },
     "^GSPTSE": {
       "date": "2026-08-19",
-      "as_of": "2026-08-19T16:35:00Z",
-      "price": 36516.11,
+      "as_of": "2026-08-19T17:30:00Z",
+      "price": 36420.06,
       "reference_price": 36536.29,
-      "change": -20.18,
-      "change_percent": -0.06,
+      "change": -116.23,
+      "change_percent": -0.32,
       "is_open": true,
       "mode": "intraday",
       "label": "Today"
     },
     "EFA": {
       "date": "2026-08-19",
-      "as_of": "2026-08-19T16:35:00Z",
-      "price": 107.62,
+      "as_of": "2026-08-19T17:30:00Z",
+      "price": 107.47,
       "reference_price": 107.87,
-      "change": -0.25,
-      "change_percent": -0.23,
+      "change": -0.4,
+      "change_percent": -0.37,
       "is_open": true,
       "mode": "intraday",
       "label": "Today"
     },
     "XUS.TO": {
       "date": "2026-08-19",
-      "as_of": "2026-08-19T16:35:00Z",
-      "price": 65.96,
+      "as_of": "2026-08-19T17:25:00Z",
+      "price": 65.9,
       "reference_price": 66.05,
-      "change": -0.09,
-      "change_percent": -0.14,
+      "change": -0.15,
+      "change_percent": -0.23,
       "is_open": true,
       "mode": "intraday",
       "label": "Today"
     },
     "XIC.TO": {
       "date": "2026-08-19",
-      "as_of": "2026-08-19T16:30:00Z",
-      "price": 58.36,
+      "as_of": "2026-08-19T17:25:00Z",
+      "price": 58.25,
       "reference_price": 58.6,
-      "change": -0.24,
-      "change_percent": -0.41,
+      "change": -0.35,
+      "change_percent": -0.6,
       "is_open": true,
       "mode": "intraday",
       "label": "Today"
     },
     "XFH.TO": {
       "date": "2026-08-19",
-      "as_of": "2026-08-19T16:25:00Z",
+      "as_of": "2026-08-19T17:10:00Z",
       "price": 42.5,
       "reference_price": 42.76,
       "change": -0.26,
@@ -6340,5 +6340,5 @@
       "label": "Today"
     }
   },
-  "status_last_updated": "2026-08-19T16:38:12.477344Z"
+  "status_last_updated": "2026-08-19T17:32:11.695968Z"
 }
