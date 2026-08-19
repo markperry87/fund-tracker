@@ -6275,55 +6275,55 @@
   "status": {
     "^GSPC": {
       "date": "2026-08-19",
-      "as_of": "2026-08-19T18:40:00Z",
-      "price": 7718.26,
+      "as_of": "2026-08-19T19:30:00Z",
+      "price": 7719.59,
       "reference_price": 7716.74,
-      "change": 1.52,
-      "change_percent": 0.02,
+      "change": 2.85,
+      "change_percent": 0.04,
       "is_open": true,
       "mode": "intraday",
       "label": "Today"
     },
     "^GSPTSE": {
       "date": "2026-08-19",
-      "as_of": "2026-08-19T18:40:00Z",
-      "price": 36368.32,
+      "as_of": "2026-08-19T19:30:00Z",
+      "price": 36414.06,
       "reference_price": 36536.29,
-      "change": -167.97,
-      "change_percent": -0.46,
+      "change": -122.23,
+      "change_percent": -0.33,
       "is_open": true,
       "mode": "intraday",
       "label": "Today"
     },
     "EFA": {
       "date": "2026-08-19",
-      "as_of": "2026-08-19T18:40:00Z",
-      "price": 107.6,
+      "as_of": "2026-08-19T19:30:00Z",
+      "price": 107.69,
       "reference_price": 107.87,
-      "change": -0.27,
-      "change_percent": -0.25,
+      "change": -0.18,
+      "change_percent": -0.17,
       "is_open": true,
       "mode": "intraday",
       "label": "Today"
     },
     "XUS.TO": {
       "date": "2026-08-19",
-      "as_of": "2026-08-19T18:40:00Z",
-      "price": 65.9,
+      "as_of": "2026-08-19T19:10:00Z",
+      "price": 65.88,
       "reference_price": 66.05,
-      "change": -0.15,
-      "change_percent": -0.23,
+      "change": -0.17,
+      "change_percent": -0.26,
       "is_open": true,
       "mode": "intraday",
       "label": "Today"
     },
     "XIC.TO": {
       "date": "2026-08-19",
-      "as_of": "2026-08-19T18:40:00Z",
-      "price": 58.13,
+      "as_of": "2026-08-19T19:30:00Z",
+      "price": 58.22,
       "reference_price": 58.6,
-      "change": -0.47,
-      "change_percent": -0.8,
+      "change": -0.38,
+      "change_percent": -0.65,
       "is_open": true,
       "mode": "intraday",
       "label": "Today"
@@ -6340,5 +6340,5 @@
       "label": "Today"
     }
   },
-  "status_last_updated": "2026-08-19T18:44:21.746779Z"
+  "status_last_updated": "2026-08-19T19:31:38.628020Z"
 }
