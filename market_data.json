@@ -4,10 +4,6 @@
       "name": "S&P 500",
       "history": [
         {
-          "date": "2025-08-20",
-          "close": 6395.78
-        },
-        {
           "date": "2025-08-21",
           "close": 6370.17
         },
@@ -1042,6 +1038,10 @@
         {
           "date": "2026-09-01",
           "close": 7631.47
+        },
+        {
+          "date": "2026-09-02",
+          "close": 7666.6
         }
       ]
     },
@@ -6271,74 +6271,74 @@
       ]
     }
   },
-  "last_updated": "2026-09-02T20:54:50.639242Z",
+  "last_updated": "2026-09-03T17:45:43.272297Z",
   "status": {
     "^GSPC": {
-      "date": "2026-09-01",
-      "as_of": "2026-09-01",
-      "price": 7631.47,
-      "reference_price": 7686.14,
-      "change": -54.67,
-      "change_percent": -0.71,
-      "is_open": false,
-      "mode": "1D",
-      "label": "1D"
+      "date": "2026-09-03",
+      "as_of": "2026-09-03T17:45:00Z",
+      "price": 7747.43,
+      "reference_price": 7686.71,
+      "change": 60.72,
+      "change_percent": 0.79,
+      "is_open": true,
+      "mode": "intraday",
+      "label": "Today"
     },
     "^GSPTSE": {
-      "date": "2026-09-02",
-      "as_of": "2026-09-02",
-      "price": 36091.61,
-      "reference_price": 35825.73,
-      "change": 265.88,
-      "change_percent": 0.74,
-      "is_open": false,
-      "mode": "1D",
-      "label": "1D"
+      "date": "2026-09-03",
+      "as_of": "2026-09-03T17:45:00Z",
+      "price": 36595.25,
+      "reference_price": 36259.12,
+      "change": 336.13,
+      "change_percent": 0.93,
+      "is_open": true,
+      "mode": "intraday",
+      "label": "Today"
     },
     "EFA": {
-      "date": "2026-09-02",
-      "as_of": "2026-09-02",
-      "price": 107.06,
-      "reference_price": 106.49,
-      "change": 0.57,
-      "change_percent": 0.54,
-      "is_open": false,
-      "mode": "1D",
-      "label": "1D"
+      "date": "2026-09-03",
+      "as_of": "2026-09-03T17:45:00Z",
+      "price": 108.37,
+      "reference_price": 108.02,
+      "change": 0.35,
+      "change_percent": 0.33,
+      "is_open": true,
+      "mode": "intraday",
+      "label": "Today"
     },
     "XUS.TO": {
-      "date": "2026-09-02",
-      "as_of": "2026-09-02",
-      "price": 65.6,
-      "reference_price": 65.57,
-      "change": 0.03,
-      "change_percent": 0.05,
-      "is_open": false,
-      "mode": "1D",
-      "label": "1D"
+      "date": "2026-09-03",
+      "as_of": "2026-09-03T17:35:00Z",
+      "price": 66.01,
+      "reference_price": 65.72,
+      "change": 0.29,
+      "change_percent": 0.44,
+      "is_open": true,
+      "mode": "intraday",
+      "label": "Today"
     },
     "XIC.TO": {
-      "date": "2026-09-02",
-      "as_of": "2026-09-02",
-      "price": 57.74,
-      "reference_price": 57.31,
-      "change": 0.43,
-      "change_percent": 0.75,
-      "is_open": false,
-      "mode": "1D",
-      "label": "1D"
+      "date": "2026-09-03",
+      "as_of": "2026-09-03T17:45:00Z",
+      "price": 58.55,
+      "reference_price": 58.18,
+      "change": 0.37,
+      "change_percent": 0.64,
+      "is_open": true,
+      "mode": "intraday",
+      "label": "Today"
     },
     "XFH.TO": {
-      "date": "2026-09-02",
-      "as_of": "2026-09-02",
-      "price": 42.59,
-      "reference_price": 42.45,
-      "change": 0.14,
-      "change_percent": 0.33,
-      "is_open": false,
-      "mode": "1D",
-      "label": "1D"
+      "date": "2026-09-03",
+      "as_of": "2026-09-03T17:25:00Z",
+      "price": 42.72,
+      "reference_price": 42.62,
+      "change": 0.1,
+      "change_percent": 0.23,
+      "is_open": true,
+      "mode": "intraday",
+      "label": "Today"
     }
   },
-  "status_last_updated": "2026-09-02T20:54:50.639242Z"
+  "status_last_updated": "2026-09-03T17:45:43.272297Z"
 }
