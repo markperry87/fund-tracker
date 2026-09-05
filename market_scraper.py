@@ -7,12 +7,14 @@ from Yahoo Finance using yfinance. Saves to market_data.json.
 import yfinance as yf
 import json
 import os
-from datetime import datetime, timezone
+import math
+from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "market_data.json")
 MARKET_TZ = ZoneInfo("America/New_York")
 MARKET_CLOSE_BUFFER_MINUTES = 15
+PRICE_BASIS = "split_adjusted_price"
 
 INDICES = {
     "^GSPC": "S&P 500",
@@ -99,13 +101,15 @@ def daily_history_change(history):
         "is_open": False,
         "mode": "1D",
         "label": "1D",
+        "comparison_basis": "previous_close",
+        "source": "saved",
     }
 
 
-def intraday_status_for_ticker(intraday_df, ticker, check_time):
+def intraday_status_for_ticker(intraday_df, ticker, check_time, history):
     try:
         ticker_df = get_ticker_frame(intraday_df, ticker)
-        ticker_df = ticker_df[["Open", "Close"]].dropna()
+        ticker_df = ticker_df[["Close"]].dropna()
     except (KeyError, TypeError):
         return None
 
@@ -119,22 +123,30 @@ def intraday_status_for_ticker(intraday_df, ticker, check_time):
     if latest_time.date() != eastern_now.date() or not is_regular_market_open(check_time):
         return None
 
-    open_price = float(ticker_df.iloc[0]["Open"])
+    previous = next(
+        (row for row in reversed(history) if row["date"] < latest_time.date().isoformat()),
+        None,
+    )
+    if previous is None:
+        return None
+    previous_close = previous["close"]
     latest_price = float(ticker_df.iloc[-1]["Close"])
-    if not open_price:
+    if not previous_close or not math.isfinite(latest_price):
         return None
 
-    absolute = latest_price - open_price
+    absolute = latest_price - previous_close
     return {
         "date": latest_time.date().isoformat(),
         "as_of": iso_utc(latest_time),
-        "price": round(latest_price, 2),
-        "reference_price": round(open_price, 2),
+        "price": round(latest_price, 6),
+        "reference_price": previous_close,
         "change": round(absolute, 2),
-        "change_percent": round((absolute / open_price) * 100, 2),
+        "change_percent": round((absolute / previous_close) * 100, 2),
         "is_open": True,
         "mode": "intraday",
         "label": "Today",
+        "comparison_basis": "previous_close",
+        "source": "saved",
     }
 
 
@@ -149,6 +161,7 @@ def build_market_status(tickers, histories, check_time):
             interval="5m",
             group_by="ticker",
             prepost=False,
+            auto_adjust=False,
             progress=False,
         )
     except Exception as e:
@@ -158,7 +171,9 @@ def build_market_status(tickers, histories, check_time):
     for ticker in tickers:
         ticker_status = None
         if intraday_df is not None:
-            ticker_status = intraday_status_for_ticker(intraday_df, ticker, check_time)
+            ticker_status = intraday_status_for_ticker(
+                intraday_df, ticker, check_time, histories.get(ticker, [])
+            )
 
         if ticker_status is None:
             ticker_status = daily_history_change(histories.get(ticker, []))
@@ -182,10 +197,23 @@ def should_include_daily_row(date_str, check_time):
     close_ready_minutes = 16 * 60 + MARKET_CLOSE_BUFFER_MINUTES
     current_minutes = eastern.hour * 60 + eastern.minute
 
-    if date_str != today:
+    if date_str < today:
         return True
+    if date_str > today:
+        return False
 
     return eastern.weekday() < 5 and current_minutes >= close_ready_minutes
+
+
+def completed_history(ticker_close, check_time):
+    """Replace the entire retained window so splits and corrections stay consistent."""
+    rows = {}
+    for date, close in ticker_close.items():
+        date_str = date.strftime("%Y-%m-%d")
+        close = float(close)
+        if should_include_daily_row(date_str, check_time) and math.isfinite(close) and close > 0:
+            rows[date_str] = {"date": date_str, "close": round(close, 6)}
+    return [rows[date] for date in sorted(rows)][-260:]
 
 
 def main():
@@ -199,49 +227,38 @@ def main():
         data["indices"].setdefault(ticker, {"name": name, "history": []})
         data["indices"][ticker]["name"] = name
 
-    # First run (empty history) -> backfill 1 year; otherwise fetch last 5 days
-    needs_backfill = any(
-        len(data["indices"][t]["history"]) == 0 for t in INDICES
-    )
-    period = "1y" if needs_backfill else "5d"
-    print(f"Fetch period: {period} ({'backfill' if needs_backfill else 'update'})")
-
+    # Yahoo Close is split-adjusted but excludes dividend adjustments. Refresh
+    # the full retained window, including a reference close before the 1Y cutoff.
     tickers = list(INDICES.keys())
-    df = yf.download(tickers, period=period, interval="1d", group_by="ticker", progress=False)
-    total_added = 0
+    df = yf.download(
+        tickers, period="2y", interval="1d", group_by="ticker",
+        auto_adjust=False, progress=False,
+    )
+    history_changed = data.get("price_basis") != PRICE_BASIS
     histories = {}
+    failures = []
 
     for ticker in tickers:
         try:
             ticker_close = df[ticker]["Close"].dropna()
-        except KeyError:
-            print(f"  WARNING: No data for {ticker}")
-            histories[ticker] = data["indices"].get(ticker, {}).get("history", [])
+        except (KeyError, TypeError):
+            failures.append(ticker)
             continue
+        history = completed_history(ticker_close, check_time)
+        old_history = data["indices"][ticker]["history"]
+        cutoff = (check_time.astimezone(MARKET_TZ).date() - timedelta(days=365)).isoformat()
+        if (not history or history[0]["date"] > cutoff
+                or (old_history and history[-1]["date"] < old_history[-1]["date"])):
+            failures.append(ticker)
+            continue
+        history_changed |= history != old_history
+        data["indices"][ticker]["history"] = history
+        histories[ticker] = history
+        print(f"  {INDICES[ticker]}: {len(history)} refreshed daily closes")
 
-        existing_dates = {h["date"] for h in data["indices"][ticker]["history"]}
-        added = 0
-
-        for date, close in ticker_close.items():
-            date_str = date.strftime("%Y-%m-%d")
-            if not should_include_daily_row(date_str, check_time):
-                continue
-            if date_str not in existing_dates:
-                data["indices"][ticker]["history"].append(
-                    {"date": date_str, "close": round(float(close), 2)}
-                )
-                added += 1
-                total_added += 1
-
-        # Sort by date
-        data["indices"][ticker]["history"].sort(key=lambda x: x["date"])
-
-        # Cap at ~1 trading year
-        if len(data["indices"][ticker]["history"]) > 260:
-            data["indices"][ticker]["history"] = data["indices"][ticker]["history"][-260:]
-
-        print(f"  {INDICES[ticker]}: {added} new entries, {len(data['indices'][ticker]['history'])} total")
-        histories[ticker] = data["indices"][ticker]["history"]
+    if failures:
+        raise RuntimeError(f"Incomplete daily history for {', '.join(failures)}; saved data unchanged")
+    data["price_basis"] = PRICE_BASIS
 
     status = build_market_status(tickers, histories, check_time)
     status_changed = status != data.get("status", {})
@@ -249,8 +266,8 @@ def main():
         data["status"] = status
         data["status_last_updated"] = iso_utc(check_time)
 
-    if total_added or status_changed:
-        if total_added:
+    if history_changed or status_changed:
+        if history_changed:
             data["last_updated"] = iso_utc(check_time)
         save_data(data)
         print(f"\nData saved to {DATA_PATH}")

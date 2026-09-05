@@ -6,6 +6,7 @@
     <title>Fund Tracker</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="live-config.js"></script>
+    <script src="market-utils.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -238,6 +239,7 @@
 
         .card-price-row {
             display: flex;
+            flex-wrap: wrap;
             align-items: baseline;
             gap: 12px;
         }
@@ -413,6 +415,7 @@
 
         <!-- Market Indices -->
         <h2 class="section-title" style="margin-top: 40px;">Market Indices</h2>
+        <p style="color: #666; font-size: 13px;">Price changes; ETF distributions are excluded. Period returns and charts use completed daily closes.</p>
         <div class="market-cards" id="marketCards">
             <div class="loading">Loading market data...</div>
         </div>
@@ -424,6 +427,7 @@
     </div>
 
     <script>
+        const { subtractDays, computeChange, mergeLiveQuotes, normalizeMarketStatus } = MarketUtils;
         // Color palette for the chart lines
         const colors = [
             '#3498db', // Blue
@@ -528,9 +532,7 @@
                 return commonDates[0];
             }
 
-            const targetDate = new Date(`${endDate}T00:00:00`);
-            targetDate.setDate(targetDate.getDate() - period.days);
-            const targetStr = targetDate.toISOString().slice(0, 10);
+            const targetStr = subtractDays(endDate, period.days);
 
             for (let i = endIndex - 1; i >= 0; i--) {
                 if (commonDates[i] <= targetStr) {
@@ -933,36 +935,6 @@
             '1Y': 365,
         };
 
-        function computeChange(history, days) {
-            if (history.length < 2) return null;
-            const latest = history[history.length - 1];
-
-            if (days === 1) {
-                const prev = history[history.length - 2];
-                return {
-                    percent: ((latest.close - prev.close) / prev.close) * 100,
-                    absolute: latest.close - prev.close,
-                };
-            }
-
-            const targetDate = new Date(latest.date);
-            targetDate.setDate(targetDate.getDate() - days);
-            const targetStr = targetDate.toISOString().slice(0, 10);
-
-            let ref = history[0];
-            for (let i = history.length - 1; i >= 0; i--) {
-                if (history[i].date <= targetStr) {
-                    ref = history[i];
-                    break;
-                }
-            }
-
-            return {
-                percent: ((latest.close - ref.close) / ref.close) * 100,
-                absolute: latest.close - ref.close,
-            };
-        }
-
         function formatMarketChange(change) {
             if (!change) return '<span class="change-neutral">N/A</span>';
             const sign = change.percent >= 0 ? '+' : '';
@@ -984,44 +956,6 @@
             return close.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
-        function formatStatusTime(asOf) {
-            if (!asOf) return '';
-            const date = new Date(asOf);
-            if (Number.isNaN(date.getTime())) return '';
-
-            return date.toLocaleTimeString([], {
-                hour: 'numeric',
-                minute: '2-digit'
-            });
-        }
-
-        function normalizeMarketStatus(rawStatus, dayChange, latest) {
-            if (!rawStatus) {
-                if (!dayChange) return null;
-                return {
-                    date: latest.date,
-                    label: '1D',
-                    price: latest.close,
-                    percent: dayChange.percent,
-                    absolute: dayChange.absolute,
-                    detail: 'since prev close'
-                };
-            }
-
-            const detail = rawStatus.is_open
-                ? `as of ${formatStatusTime(rawStatus.as_of)}`
-                : 'since prev close';
-
-            return {
-                date: rawStatus.date || latest.date,
-                label: rawStatus.label || (rawStatus.is_open ? 'Today' : '1D'),
-                price: rawStatus.price,
-                percent: rawStatus.change_percent,
-                absolute: rawStatus.change,
-                detail: detail
-            };
-        }
-
         function renderMarketStatus(status, ticker) {
             if (!status) return '';
 
@@ -1037,9 +971,8 @@
         }
 
         function createMarketChart(canvasId, history, days, color) {
-            const cutoff = new Date();
-            cutoff.setDate(cutoff.getDate() - days);
-            const cutoffStr = cutoff.toISOString().slice(0, 10);
+            if (history.length === 0) return null;
+            const cutoffStr = subtractDays(history[history.length - 1].date, days);
             const filtered = history.filter(h => h.date >= cutoffStr);
 
             if (filtered.length === 0) return null;
@@ -1092,34 +1025,6 @@
             return 'mchart-' + ticker.replace(/[^A-Za-z0-9]/g, '');
         }
 
-        function mergeLiveQuotes(marketData, liveData) {
-            if (!liveData?.quotes) return marketData;
-
-            const merged = JSON.parse(JSON.stringify(marketData));
-            merged.status = merged.status || {};
-
-            marketTickers.forEach(ticker => {
-                const quote = liveData.quotes[ticker];
-                const idx = merged.indices?.[ticker];
-                if (!quote || !idx) return;
-
-                merged.status[ticker] = quote;
-
-                // Completed daily prices can update all card statistics immediately.
-                if (!quote.is_open && quote.date && Number.isFinite(quote.price)) {
-                    const existing = idx.history.find(entry => entry.date === quote.date);
-                    if (existing) {
-                        existing.close = quote.price;
-                    } else {
-                        idx.history.push({ date: quote.date, close: quote.price });
-                        idx.history.sort((a, b) => a.date.localeCompare(b.date));
-                    }
-                }
-            });
-
-            return merged;
-        }
-
         async function fetchLiveQuotes() {
             if (!LIVE_QUOTES_ENDPOINT) return null;
 
@@ -1128,7 +1033,7 @@
                 const separator = LIVE_QUOTES_ENDPOINT.includes('?') ? '&' : '?';
                 const response = await fetch(
                     `${LIVE_QUOTES_ENDPOINT}${separator}symbols=${query}&t=${Date.now()}`,
-                    { cache: 'no-store' }
+                    { cache: 'no-store', signal: AbortSignal.timeout(10000) }
                 );
                 if (!response.ok) throw new Error(`Live quote response ${response.status}`);
                 return await response.json();
@@ -1165,11 +1070,9 @@
                 const weekChange = computeChange(idx.history, 7);
                 const monthChange = computeChange(idx.history, 30);
                 const yearChange = computeChange(idx.history, 365);
-                const currentStatus = normalizeMarketStatus(marketData.status?.[ticker], dayChange, latest);
+                const currentStatus = normalizeMarketStatus(marketData.status?.[ticker], dayChange, latest, idx.history);
                 const displayPrice = currentStatus?.price || latest.close;
-                const displayDate = currentStatus?.label === 'Today'
-                    ? currentStatus.detail
-                    : currentStatus?.date || latest.date;
+                const displayDate = currentStatus?.asOfText || latest.date;
                 const canvasId = marketChartId(ticker);
                 const activePeriod = activeMarketPeriods[ticker] || '1M';
 
@@ -1183,6 +1086,7 @@
                             </div>
                         </div>
                         ${renderMarketStatus(currentStatus, ticker)}
+                        <p style="color: #666; font-size: 12px; margin: 8px 0;">${currentStatus?.notice || 'Saved daily close'}</p>
                         <div class="period-stats">
                             <div class="period-stat">
                                 <span class="label">1D</span>
@@ -1263,9 +1167,14 @@
         // Load market data
         async function initMarket() {
             try {
-                const response = await fetch(`market_data.json?t=${Date.now()}`);
+                const response = await fetch(`market_data.json?t=${Date.now()}`, { signal: AbortSignal.timeout(10000) });
                 if (!response.ok) throw new Error('No market_data.json');
                 const savedMarketData = await response.json();
+                // Render saved data immediately, even if the live request is slow.
+                const saved = mergeLiveQuotes(savedMarketData, null);
+                window._marketData = saved;
+                renderMarketCards(saved, 'marketCards', indexOrder);
+                renderMarketCards(saved, 'underlyingEtfCards', etfOrder);
                 const liveData = await fetchLiveQuotes();
                 const marketData = mergeLiveQuotes(savedMarketData, liveData);
                 window._marketData = marketData;
@@ -1276,7 +1185,12 @@
                 }
             } catch (error) {
                 console.error('Error loading market data:', error);
-                if (!window._marketData) {
+                if (window._marketData) {
+                    const fallback = mergeLiveQuotes(window._marketData, null);
+                    window._marketData = fallback;
+                    renderMarketCards(fallback, 'marketCards', indexOrder);
+                    renderMarketCards(fallback, 'underlyingEtfCards', etfOrder);
+                } else {
                     document.getElementById('marketCards').innerHTML =
                         '<div class="loading">Could not load market data. Run market_scraper.py first.</div>';
                     document.getElementById('underlyingEtfCards').innerHTML =

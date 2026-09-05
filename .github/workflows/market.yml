@@ -29,6 +29,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install yfinance pandas
 
+      - name: Test market calculations
+        run: |
+          node --test tests/market.test.cjs
+          python -m unittest discover -s tests -p 'test_*.py'
+
       - name: Run market scraper
         run: python market_scraper.py
 

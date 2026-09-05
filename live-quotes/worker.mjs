@@ -71,7 +71,8 @@ async function fetchQuote(symbol) {
         const querySymbol = encodeURIComponent(symbol);
         const sourceUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${querySymbol}?range=1d&interval=5m&includePrePost=false&events=history`;
         const response = await fetch(sourceUrl, {
-            headers: { 'User-Agent': 'fund-tracker-live-quotes/1.0' }
+            headers: { 'User-Agent': 'fund-tracker-live-quotes/1.0' },
+            signal: AbortSignal.timeout(8000)
         });
         if (!response.ok) throw new Error(`Quote response ${response.status}`);
 
@@ -85,7 +86,7 @@ async function fetchQuote(symbol) {
     }
 }
 
-function buildStatus(result) {
+export function buildStatus(result, nowMilliseconds = Date.now()) {
     const meta = result.meta || {};
     const timestamps = result.timestamp || [];
     const series = result.indicators?.quote?.[0] || {};
@@ -94,26 +95,14 @@ function buildStatus(result) {
     const latestTimestamp = numberOrFallback(meta.regularMarketTime, lastNumber(timestamps));
     const previousClose = numberOrFallback(meta.chartPreviousClose, meta.previousClose);
     const regular = meta.currentTradingPeriod?.regular;
-    const now = Date.now() / 1000;
+    const now = nowMilliseconds / 1000;
     const isOpen = Boolean(regular && now >= regular.start && now < regular.end);
 
     if (!Number.isFinite(latestPrice) || !Number.isFinite(latestTimestamp)) {
         throw new Error('Incomplete quote data');
     }
 
-    let referencePrice = previousClose;
-    let label = '1D';
-
-    if (isOpen) {
-        const openingIndex = timestamps.findIndex(
-            timestamp => timestamp >= regular.start && timestamp < regular.end
-        );
-        const openingValue = openingIndex >= 0
-            ? numberOrFallback(series.open?.[openingIndex], closes[openingIndex])
-            : null;
-        if (Number.isFinite(openingValue)) referencePrice = openingValue;
-        label = 'Today';
-    }
+    const referencePrice = previousClose;
 
     if (!Number.isFinite(referencePrice) || referencePrice === 0) {
         throw new Error('No comparison price returned');
@@ -123,13 +112,15 @@ function buildStatus(result) {
     return {
         date: exchangeDate(latestTimestamp, meta.exchangeTimezoneName),
         as_of: new Date(latestTimestamp * 1000).toISOString(),
-        price: roundTwo(latestPrice),
-        reference_price: roundTwo(referencePrice),
+        price: latestPrice,
+        reference_price: referencePrice,
         change: roundTwo(change),
         change_percent: roundTwo((change / referencePrice) * 100),
         is_open: isOpen,
         mode: isOpen ? 'intraday' : '1D',
-        label
+        label: isOpen ? 'Today' : 'Last quote',
+        comparison_basis: 'previous_close',
+        source: 'live'
     };
 }
 
