@@ -2086,17 +2086,13 @@
         },
         {
           "date": "2026-10-08",
-          "close": 35145.378906
+          "close": 35145.398438
         }
       ]
     },
     "EFA": {
       "name": "MSCI EAFE ETF (EFA)",
       "history": [
-        {
-          "date": "2025-09-25",
-          "close": 91.919998
-        },
         {
           "date": "2025-09-26",
           "close": 92.629997
@@ -3132,6 +3128,10 @@
         {
           "date": "2026-10-07",
           "close": 103.099998
+        },
+        {
+          "date": "2026-10-08",
+          "close": 102.699997
         }
       ]
     },
@@ -6271,87 +6271,87 @@
       ]
     }
   },
-  "last_updated": "2026-10-09T00:14:00.626126Z",
+  "last_updated": "2026-10-09T19:23:42.495085Z",
   "status": {
     "^GSPC": {
-      "date": "2026-10-08",
-      "as_of": "2026-10-08",
-      "price": 7765.359863,
-      "reference_price": 7801.77002,
-      "change": -36.41,
-      "change_percent": -0.47,
-      "is_open": false,
-      "mode": "1D",
-      "label": "1D",
+      "date": "2026-10-09",
+      "as_of": "2026-10-09T19:20:00Z",
+      "price": 7818.919922,
+      "reference_price": 7765.359863,
+      "change": 53.56,
+      "change_percent": 0.69,
+      "is_open": true,
+      "mode": "intraday",
+      "label": "Today",
       "comparison_basis": "previous_close",
       "source": "saved"
     },
     "^GSPTSE": {
-      "date": "2026-10-08",
-      "as_of": "2026-10-08",
-      "price": 35145.378906,
-      "reference_price": 35041.898438,
-      "change": 103.48,
-      "change_percent": 0.3,
-      "is_open": false,
-      "mode": "1D",
-      "label": "1D",
+      "date": "2026-10-09",
+      "as_of": "2026-10-09T19:20:00Z",
+      "price": 35654.539062,
+      "reference_price": 35145.398438,
+      "change": 509.14,
+      "change_percent": 1.45,
+      "is_open": true,
+      "mode": "intraday",
+      "label": "Today",
       "comparison_basis": "previous_close",
       "source": "saved"
     },
     "EFA": {
-      "date": "2026-10-07",
-      "as_of": "2026-10-07",
-      "price": 103.099998,
-      "reference_price": 104.220001,
-      "change": -1.12,
-      "change_percent": -1.07,
-      "is_open": false,
-      "mode": "1D",
-      "label": "1D",
+      "date": "2026-10-09",
+      "as_of": "2026-10-09T19:20:00Z",
+      "price": 103.385002,
+      "reference_price": 102.699997,
+      "change": 0.69,
+      "change_percent": 0.67,
+      "is_open": true,
+      "mode": "intraday",
+      "label": "Today",
       "comparison_basis": "previous_close",
       "source": "saved"
     },
     "XUS.TO": {
-      "date": "2026-10-08",
-      "as_of": "2026-10-08",
-      "price": 68.32,
-      "reference_price": 68.830002,
-      "change": -0.51,
-      "change_percent": -0.74,
-      "is_open": false,
-      "mode": "1D",
-      "label": "1D",
+      "date": "2026-10-09",
+      "as_of": "2026-10-09T19:15:00Z",
+      "price": 69.010002,
+      "reference_price": 68.32,
+      "change": 0.69,
+      "change_percent": 1.01,
+      "is_open": true,
+      "mode": "intraday",
+      "label": "Today",
       "comparison_basis": "previous_close",
       "source": "saved"
     },
     "XIC.TO": {
-      "date": "2026-10-08",
-      "as_of": "2026-10-08",
-      "price": 56.09,
-      "reference_price": 55.919998,
-      "change": 0.17,
-      "change_percent": 0.3,
-      "is_open": false,
-      "mode": "1D",
-      "label": "1D",
+      "date": "2026-10-09",
+      "as_of": "2026-10-09T19:20:00Z",
+      "price": 56.919998,
+      "reference_price": 56.09,
+      "change": 0.83,
+      "change_percent": 1.48,
+      "is_open": true,
+      "mode": "intraday",
+      "label": "Today",
       "comparison_basis": "previous_close",
       "source": "saved"
     },
     "XFH.TO": {
-      "date": "2026-10-08",
-      "as_of": "2026-10-08",
-      "price": 41.619999,
-      "reference_price": 41.84,
-      "change": -0.22,
-      "change_percent": -0.53,
-      "is_open": false,
-      "mode": "1D",
-      "label": "1D",
+      "date": "2026-10-09",
+      "as_of": "2026-10-09T19:05:00Z",
+      "price": 41.900002,
+      "reference_price": 41.619999,
+      "change": 0.28,
+      "change_percent": 0.67,
+      "is_open": true,
+      "mode": "intraday",
+      "label": "Today",
       "comparison_basis": "previous_close",
       "source": "saved"
     }
   },
-  "status_last_updated": "2026-10-09T00:14:00.626126Z",
+  "status_last_updated": "2026-10-09T19:23:42.495085Z",
   "price_basis": "split_adjusted_price"
 }
