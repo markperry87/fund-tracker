@@ -4,10 +4,6 @@
       "name": "S&P 500",
       "history": [
         {
-          "date": "2025-09-26",
-          "close": 6643.700195
-        },
-        {
           "date": "2025-09-29",
           "close": 6661.209961
         },
@@ -1042,16 +1038,16 @@
         {
           "date": "2026-10-08",
           "close": 7765.359863
+        },
+        {
+          "date": "2026-10-09",
+          "close": 7811.540039
         }
       ]
     },
     "^GSPTSE": {
       "name": "TSX Composite",
       "history": [
-        {
-          "date": "2025-09-26",
-          "close": 29761.300781
-        },
         {
           "date": "2025-09-29",
           "close": 29971.900391
@@ -2087,16 +2083,16 @@
         {
           "date": "2026-10-08",
           "close": 35145.398438
+        },
+        {
+          "date": "2026-10-09",
+          "close": 35664.621094
         }
       ]
     },
     "EFA": {
       "name": "MSCI EAFE ETF (EFA)",
       "history": [
-        {
-          "date": "2025-09-26",
-          "close": 92.629997
-        },
         {
           "date": "2025-09-29",
           "close": 92.989998
@@ -3132,16 +3128,16 @@
         {
           "date": "2026-10-08",
           "close": 102.699997
+        },
+        {
+          "date": "2026-10-09",
+          "close": 103.400002
         }
       ]
     },
     "XUS.TO": {
       "name": "iShares Core S&P 500 Index ETF (XUS)",
       "history": [
-        {
-          "date": "2025-09-26",
-          "close": 57.459999
-        },
         {
           "date": "2025-09-29",
           "close": 57.529999
@@ -4177,16 +4173,16 @@
         {
           "date": "2026-10-08",
           "close": 68.32
+        },
+        {
+          "date": "2026-10-09",
+          "close": 68.949997
         }
       ]
     },
     "XIC.TO": {
       "name": "iShares Core S&P/TSX Capped Composite Index ETF (XIC)",
       "history": [
-        {
-          "date": "2025-09-26",
-          "close": 47.400002
-        },
         {
           "date": "2025-09-29",
           "close": 47.790001
@@ -5222,16 +5218,16 @@
         {
           "date": "2026-10-08",
           "close": 56.09
+        },
+        {
+          "date": "2026-10-09",
+          "close": 56.939999
         }
       ]
     },
     "XFH.TO": {
       "name": "iShares Core MSCI EAFE IMI Index ETF (CAD-Hedged) (XFH)",
       "history": [
-        {
-          "date": "2025-09-26",
-          "close": 36.02
-        },
         {
           "date": "2025-09-29",
           "close": 36.040001
@@ -6267,91 +6263,95 @@
         {
           "date": "2026-10-08",
           "close": 41.619999
+        },
+        {
+          "date": "2026-10-09",
+          "close": 41.900002
         }
       ]
     }
   },
-  "last_updated": "2026-10-09T19:23:42.495085Z",
+  "last_updated": "2026-10-09T23:25:41.258779Z",
   "status": {
     "^GSPC": {
       "date": "2026-10-09",
-      "as_of": "2026-10-09T19:20:00Z",
-      "price": 7818.919922,
+      "as_of": "2026-10-09",
+      "price": 7811.540039,
       "reference_price": 7765.359863,
-      "change": 53.56,
-      "change_percent": 0.69,
-      "is_open": true,
-      "mode": "intraday",
-      "label": "Today",
+      "change": 46.18,
+      "change_percent": 0.59,
+      "is_open": false,
+      "mode": "1D",
+      "label": "1D",
       "comparison_basis": "previous_close",
       "source": "saved"
     },
     "^GSPTSE": {
       "date": "2026-10-09",
-      "as_of": "2026-10-09T19:20:00Z",
-      "price": 35654.539062,
+      "as_of": "2026-10-09",
+      "price": 35664.621094,
       "reference_price": 35145.398438,
-      "change": 509.14,
-      "change_percent": 1.45,
-      "is_open": true,
-      "mode": "intraday",
-      "label": "Today",
+      "change": 519.22,
+      "change_percent": 1.48,
+      "is_open": false,
+      "mode": "1D",
+      "label": "1D",
       "comparison_basis": "previous_close",
       "source": "saved"
     },
     "EFA": {
       "date": "2026-10-09",
-      "as_of": "2026-10-09T19:20:00Z",
-      "price": 103.385002,
+      "as_of": "2026-10-09",
+      "price": 103.400002,
       "reference_price": 102.699997,
-      "change": 0.69,
-      "change_percent": 0.67,
-      "is_open": true,
-      "mode": "intraday",
-      "label": "Today",
+      "change": 0.7,
+      "change_percent": 0.68,
+      "is_open": false,
+      "mode": "1D",
+      "label": "1D",
       "comparison_basis": "previous_close",
       "source": "saved"
     },
     "XUS.TO": {
       "date": "2026-10-09",
-      "as_of": "2026-10-09T19:15:00Z",
-      "price": 69.010002,
+      "as_of": "2026-10-09",
+      "price": 68.949997,
       "reference_price": 68.32,
-      "change": 0.69,
-      "change_percent": 1.01,
-      "is_open": true,
-      "mode": "intraday",
-      "label": "Today",
+      "change": 0.63,
+      "change_percent": 0.92,
+      "is_open": false,
+      "mode": "1D",
+      "label": "1D",
       "comparison_basis": "previous_close",
       "source": "saved"
     },
     "XIC.TO": {
       "date": "2026-10-09",
-      "as_of": "2026-10-09T19:20:00Z",
-      "price": 56.919998,
+      "as_of": "2026-10-09",
+      "price": 56.939999,
       "reference_price": 56.09,
-      "change": 0.83,
-      "change_percent": 1.48,
-      "is_open": true,
-      "mode": "intraday",
-      "label": "Today",
+      "change": 0.85,
+      "change_percent": 1.52,
+      "is_open": false,
+      "mode": "1D",
+      "label": "1D",
       "comparison_basis": "previous_close",
       "source": "saved"
     },
     "XFH.TO": {
       "date": "2026-10-09",
-      "as_of": "2026-10-09T19:05:00Z",
+      "as_of": "2026-10-09",
       "price": 41.900002,
       "reference_price": 41.619999,
       "change": 0.28,
       "change_percent": 0.67,
-      "is_open": true,
-      "mode": "intraday",
-      "label": "Today",
+      "is_open": false,
+      "mode": "1D",
+      "label": "1D",
       "comparison_basis": "previous_close",
       "source": "saved"
     }
   },
-  "status_last_updated": "2026-10-09T19:23:42.495085Z",
+  "status_last_updated": "2026-10-09T23:25:41.258779Z",
   "price_basis": "split_adjusted_price"
 }
