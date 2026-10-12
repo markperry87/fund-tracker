@@ -4,10 +4,6 @@
       "name": "S&P 500",
       "history": [
         {
-          "date": "2025-09-29",
-          "close": 6661.209961
-        },
-        {
           "date": "2025-09-30",
           "close": 6688.459961
         },
@@ -1042,6 +1038,10 @@
         {
           "date": "2026-10-09",
           "close": 7811.540039
+        },
+        {
+          "date": "2026-10-12",
+          "close": 7807.240234
         }
       ]
     },
@@ -2086,17 +2086,13 @@
         },
         {
           "date": "2026-10-09",
-          "close": 35664.621094
+          "close": 35664.601562
         }
       ]
     },
     "EFA": {
       "name": "MSCI EAFE ETF (EFA)",
       "history": [
-        {
-          "date": "2025-09-29",
-          "close": 92.989998
-        },
         {
           "date": "2025-09-30",
           "close": 93.370003
@@ -3132,6 +3128,10 @@
         {
           "date": "2026-10-09",
           "close": 103.400002
+        },
+        {
+          "date": "2026-10-12",
+          "close": 103.050003
         }
       ]
     },
@@ -6271,15 +6271,15 @@
       ]
     }
   },
-  "last_updated": "2026-10-09T23:25:41.258779Z",
+  "last_updated": "2026-10-12T22:02:33.201340Z",
   "status": {
     "^GSPC": {
-      "date": "2026-10-09",
-      "as_of": "2026-10-09",
-      "price": 7811.540039,
-      "reference_price": 7765.359863,
-      "change": 46.18,
-      "change_percent": 0.59,
+      "date": "2026-10-12",
+      "as_of": "2026-10-12",
+      "price": 7807.240234,
+      "reference_price": 7811.540039,
+      "change": -4.3,
+      "change_percent": -0.06,
       "is_open": false,
       "mode": "1D",
       "label": "1D",
@@ -6289,9 +6289,9 @@
     "^GSPTSE": {
       "date": "2026-10-09",
       "as_of": "2026-10-09",
-      "price": 35664.621094,
+      "price": 35664.601562,
       "reference_price": 35145.398438,
-      "change": 519.22,
+      "change": 519.2,
       "change_percent": 1.48,
       "is_open": false,
       "mode": "1D",
@@ -6300,12 +6300,12 @@
       "source": "saved"
     },
     "EFA": {
-      "date": "2026-10-09",
-      "as_of": "2026-10-09",
-      "price": 103.400002,
-      "reference_price": 102.699997,
-      "change": 0.7,
-      "change_percent": 0.68,
+      "date": "2026-10-12",
+      "as_of": "2026-10-12",
+      "price": 103.050003,
+      "reference_price": 103.400002,
+      "change": -0.35,
+      "change_percent": -0.34,
       "is_open": false,
       "mode": "1D",
       "label": "1D",
@@ -6352,6 +6352,6 @@
       "source": "saved"
     }
   },
-  "status_last_updated": "2026-10-09T23:25:41.258779Z",
+  "status_last_updated": "2026-10-12T22:02:33.201340Z",
   "price_basis": "split_adjusted_price"
 }
