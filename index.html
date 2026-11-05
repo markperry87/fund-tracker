@@ -847,7 +847,29 @@
             });
         }
 
-        function updateLastUpdated(data) {
+        // The scraper only commits when RBC has new prices, so data.json can't
+        // tell us when it last *checked*. Ask GitHub's public Actions API for
+        // the latest scraper run instead (no auth needed for public repos).
+        function getRepoSlug() {
+            const owner = location.hostname.endsWith('.github.io') ? location.hostname.split('.')[0] : 'markperry87';
+            const repo = location.hostname.endsWith('.github.io') && location.pathname.split('/')[1] || 'fund-tracker';
+            return `${owner}/${repo}`;
+        }
+
+        async function fetchLatestScraperRun() {
+            try {
+                const res = await fetch(`https://api.github.com/repos/${getRepoSlug()}/actions/workflows/scrape.yml/runs?per_page=10&exclude_pull_requests=true`);
+                if (!res.ok) return null;
+                const runs = (await res.json()).workflow_runs || [];
+                // Skip queued/cancelled runs: they never actually checked RBC.
+                return runs.find(r => r.status === 'in_progress' ||
+                    (r.status === 'completed' && ['success', 'failure', 'timed_out'].includes(r.conclusion))) || null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function updateLastUpdated(data, run = null) {
             const el = document.getElementById('lastUpdated');
             if (!data) {
                 el.textContent = '';
@@ -857,7 +879,14 @@
             let html = '';
 
             // Show when the scraper last checked
-            if (data.last_checked) {
+            if (run && run.status === 'in_progress') {
+                const started = new Date(run.run_started_at || run.created_at);
+                html += `<span class="date-row"><span class="label">Last checked:</span> checking RBC now (since ${started.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })})</span>`;
+            } else if (run) {
+                const checkedDate = new Date(run.updated_at);
+                const failed = run.conclusion !== 'success' ? ' (check failed)' : '';
+                html += `<span class="date-row"><span class="label">Last checked:</span> ${checkedDate.toLocaleString()}${failed}</span>`;
+            } else if (data.last_checked) {
                 const checkedDate = new Date(data.last_checked);
                 html += `<span class="date-row"><span class="label">Last checked:</span> ${checkedDate.toLocaleString()}</span>`;
             } else if (data.last_updated) {
@@ -884,6 +913,7 @@
                 window._fundData = data;
 
                 updateLastUpdated(data);
+                fetchLatestScraperRun().then(run => { if (run) updateLastUpdated(data, run); });
                 renderTable(data, window._marketData);
                 renderChart(data, activeFundChartPeriod);
             } catch (error) {

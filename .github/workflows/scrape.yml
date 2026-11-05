@@ -2,13 +2,19 @@ name: Daily Fund Scraper
 
 on:
   schedule:
-    # Retry hourly from around the market close through late evening because
-    # RBC GAM prices can post late or in batches. Use :17 because GitHub warns
-    # that top-of-hour scheduled jobs are more likely to be delayed or dropped.
+    # GitHub silently drops many scheduled runs (often most of them), so these
+    # slots are just chances to start a run. Each run that starts keeps polling
+    # RBC until the latest prices appear (see MAX_POLL_MINUTES below), so only
+    # one slot per evening needs to fire. Use :17 because GitHub warns that
+    # top-of-hour jobs are more likely to be delayed or dropped.
     # Times are UTC and include Friday evening updates that fall on Saturday UTC.
     - cron: '17 20-23 * * 1-5'
     - cron: '17 0-5 * * 2-6'
-  workflow_dispatch:  # Allow manual trigger
+  workflow_dispatch:
+    inputs:
+      max_poll_minutes:
+        description: 'Keep retrying for up to this many minutes (0 = check once)'
+        default: '240'
 
 concurrency:
   group: fund-scraper
@@ -17,38 +23,87 @@ concurrency:
 jobs:
   scrape:
     runs-on: ubuntu-latest
+    timeout-minutes: 300
+    permissions:
+      contents: write
+
+    env:
+      POLL_INTERVAL_MINUTES: 15
+      MAX_POLL_MINUTES: ${{ inputs.max_poll_minutes || '240' }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
+      - name: Check whether the latest prices are already saved
+        id: precheck
+        run: |
+          if python scraper.py --expected-posted; then
+            echo "needed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "needed=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Install dependencies
+        if: steps.precheck.outputs.needed == 'true'
         run: |
           python -m pip install --upgrade pip
           pip install playwright
           playwright install chromium
           playwright install-deps chromium
 
-      - name: Run fund scraper
-        run: python scraper.py
+      - name: Scrape, retrying until RBC posts the latest prices
+        if: steps.precheck.outputs.needed == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          deadline=$(( $(date +%s) + MAX_POLL_MINUTES * 60 ))
+          attempt=1
+          last_failed=0
+
+          while true; do
+            echo "::group::Attempt $attempt ($(TZ=America/Toronto date +'%Y-%m-%d %H:%M %Z'))"
+            if python scraper.py; then last_failed=0; else last_failed=1; echo "Scrape attempt failed"; fi
+            echo "::endgroup::"
+
+            # Commit as soon as anything new arrives, even if we keep polling.
+            git add data.json
+            if ! git diff --staged --quiet; then
+              git commit -m "Update fund data for $(TZ=America/Toronto date +'%Y-%m-%d')"
+              # The market workflow pushes to main too; rebase onto it first.
+              git pull --rebase origin main
+              git push
+            fi
+
+            if python scraper.py --expected-posted; then
+              echo "Latest prices are saved."
+              break
+            fi
+
+            if [ $(( $(date +%s) + POLL_INTERVAL_MINUTES * 60 )) -gt "$deadline" ]; then
+              echo "RBC still hasn't posted the latest prices; a later scheduled run will keep trying."
+              break
+            fi
+
+            echo "RBC hasn't posted the latest prices yet; checking again in $POLL_INTERVAL_MINUTES minutes."
+            sleep $(( POLL_INTERVAL_MINUTES * 60 ))
+            attempt=$(( attempt + 1 ))
+          done
+
+          exit $last_failed
 
       - name: Upload debug screenshot
-        if: always()
+        if: always() && steps.precheck.outputs.needed == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: debug-screenshot
           path: debug_screenshot.png
           if-no-files-found: ignore
-
-      - name: Commit and push if changed
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add data.json
-          git diff --staged --quiet || git commit -m "Update fund data for $(date +'%Y-%m-%d')"
-          git push

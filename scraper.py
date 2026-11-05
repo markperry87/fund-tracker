@@ -5,12 +5,21 @@ Uses the fund prices list page with date parameters to pull historical data
 Saves data to JSON file for static site hosting
 """
 
-from playwright.sync_api import sync_playwright
 from datetime import datetime, timezone, timedelta
+from zoneinfo import ZoneInfo
 import json
 import re
 import os
 import sys
+
+# RBC publishes prices on Toronto time. GitHub runners use UTC, so all
+# "which day is it" logic must use this zone rather than the system clock.
+TORONTO = ZoneInfo("America/Toronto")
+
+# RBC posts a trading day's prices in the evening, sometimes after midnight.
+# Until this many hours past midnight (Toronto), the previous business day is
+# still the one we expect to see appear.
+EXPECTED_DATE_LAG_HOURS = 6
 
 # Data file path
 DATA_PATH = os.path.join(os.path.dirname(__file__), "data.json")
@@ -111,7 +120,7 @@ def get_business_days(num_days, end_date=None):
     Returns list of date strings in YYYYMMDD format (most recent first).
     """
     dates = []
-    current = end_date or datetime.now().date()
+    current = end_date or datetime.now(TORONTO).date()
     while len(dates) < num_days:
         if current.weekday() < 5:  # Mon=0 through Fri=4
             dates.append(current.strftime('%Y%m%d'))
@@ -160,6 +169,28 @@ def get_missing_dates(num_days):
     return missing
 
 
+def expected_price_date(now=None):
+    """
+    Return the most recent business day whose prices RBC should have posted,
+    or will post this evening. Weekends roll back to Friday.
+    """
+    now = now or datetime.now(TORONTO)
+    current = (now.astimezone(TORONTO) - timedelta(hours=EXPECTED_DATE_LAG_HOURS)).date()
+    while current.weekday() >= 5:
+        current -= timedelta(days=1)
+    return current
+
+
+def has_all_funds_for(date_iso, data=None):
+    """True when every tracked fund has a history entry for date_iso (YYYY-MM-DD)."""
+    data = data or load_data()
+    funds = data.get('funds', {})
+    return all(
+        any(h.get('date') == date_iso for h in funds.get(code, {}).get('history', []))
+        for code, _ in FUNDS
+    )
+
+
 def scrape_multiple_dates(dates_to_scrape):
     """
     Scrape fund data for multiple dates using the prices list page.
@@ -172,6 +203,9 @@ def scrape_multiple_dates(dates_to_scrape):
     """
     all_results = {}
     skipped_dates = set()  # dates that are out of range or unavailable
+
+    # Imported here so the quick --expected-posted check runs without Playwright.
+    from playwright.sync_api import sync_playwright
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -275,7 +309,7 @@ def update_json_data(all_results, skipped_dates=None):
         all_results: dict mapping date (YYYY-MM-DD) -> list of fund result dicts
     """
     data = load_data()
-    new_entries_added = False
+    new_entries_added = 0
 
     for date, results in all_results.items():
         for r in results:
@@ -307,7 +341,7 @@ def update_json_data(all_results, skipped_dates=None):
                         "nav": r['nav'],
                         "change_percent": r['change_percent']
                     })
-                    new_entries_added = True
+                    new_entries_added += 1
 
         # Sort each fund's history by date
         for fund_code in data['funds']:
@@ -330,15 +364,24 @@ def update_json_data(all_results, skipped_dates=None):
 
     if new_entries_added:
         save_data(data)
-    return data
+    return new_entries_added
 
 
 def main():
+    # --expected-posted: exit 0 if data.json already has the latest expected
+    # business day for every fund, 1 otherwise. Used by the workflow to decide
+    # whether to keep polling. Needs no network or Playwright.
+    if '--expected-posted' in sys.argv:
+        target = expected_price_date().isoformat()
+        posted = has_all_funds_for(target)
+        print(f"Latest expected price date {target}: {'saved' if posted else 'not saved yet'}")
+        sys.exit(0 if posted else 1)
+
     print("RBC GAM Fund NAV Scraper")
     print("=" * 60)
 
-    check_datetime = datetime.now()
-    print(f"Scraper run date: {check_datetime.strftime('%Y-%m-%d %H:%M:%S')}")
+    check_datetime = datetime.now(TORONTO)
+    print(f"Scraper run time: {check_datetime.strftime('%Y-%m-%d %H:%M:%S %Z')}")
 
     # --days N: how many business days back to look (default 5)
     # --backfill N: pull N business days, ignoring what's already in data.json
@@ -391,8 +434,11 @@ def main():
                 print(f"  {r['fund_name']:<35} {nav_str:>12} {change_str:>10}")
 
         # Save to JSON
-        update_json_data(all_results, skipped_dates)
-        print(f"\nData saved to data.json ({len(all_results)} new dates added)")
+        added = update_json_data(all_results, skipped_dates)
+        if added:
+            print(f"\nData saved to data.json ({added} new fund prices added)")
+        else:
+            print("\nNo new prices yet; data.json unchanged")
 
         return all_results
 

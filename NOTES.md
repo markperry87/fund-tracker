@@ -6,7 +6,7 @@ Scrapes daily NAV and % change data for 7 RBC mutual funds from rbcgam.com and d
 ## Architecture
 
 ### Data Flow
-1. GitHub Actions runs `scraper.py` hourly through the evening on weekdays
+1. GitHub Actions starts `scraper.py` on hourly evening slots; each run polls RBC every 15 min (up to 4 h) until the latest prices appear
 2. Scraper visits RBC's mutual fund prices list page with recent date parameters
 3. Extracts NAV, daily change %, and date
 4. Updates `data.json` when new dated NAV entries are found
@@ -69,6 +69,10 @@ Only adds a new history entry if that fund does not already have an entry for th
 ### Late RBC Price Updates
 **Problem**: If RBC returned the previous available price date before publishing the requested date later that evening, the scraper stored the requested date as unavailable and skipped it forever.
 **Solution**: Treat unavailable dates as run-local only. Recent missing business days are retried on later scheduled runs until data appears or the date falls out of the lookback window.
+
+### Dropped Scheduled Runs / Stale "Last checked"
+**Problem**: GitHub silently skipped most hourly cron slots (often ~2 of 10 ran), and `last_checked` in data.json only changes when new prices are committed, so the site showed the last *successful* time, not the last check.
+**Solution**: Each run that does start keeps polling (see `scrape.yml`), and commits as soon as data arrives. `scraper.py --expected-posted` reports whether the latest expected business day (Toronto time, 6 h grace after midnight) is saved; runs exit early when it is. The page reads "Last checked" from the GitHub Actions API (latest scraper run) and falls back to data.json.
 
 ### Timezone Display
 **Problem**: "Last checked" showed wrong time (UTC interpreted as local).
